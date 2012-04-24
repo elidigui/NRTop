@@ -23,6 +23,7 @@ class TestReadDes(ut.TestCase):
         self.test1 = self.rep_test +os.sep+"test1"+os.sep+"test1.txt"
         self.test2 = self.rep_test +os.sep+"test2"+os.sep+"test2.des"
         self.f1    = self.rep_test +os.sep+"test3"+os.sep+"TA3.csv"
+        self.f2    = self.rep_test +os.sep+"test4"+os.sep+"TA3.csv"
 
     def test_header_Desfile_2_Array(self):
         """ Test if the function read the header of a .des file """
@@ -49,7 +50,13 @@ class TestReadDes(ut.TestCase):
         df1=SMF.ReadCsv(self.f1,8,";").Desfile_2_Array()
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
- 
+
+    def test_value_Desfile_2_Array_4(self):
+        """ Test if the function reada value of a .csv file """
+        df1=SMF.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
+                         "Dont read the right value")
+
     def test_find_line(self):
         """ Test if it find the good line in test2.des"""
         a = SMF.ReadCsv(self.test2,0,"\s+")
@@ -67,8 +74,8 @@ class TestCompDataFrames(ut.TestCase):
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestCompDataFrames"
         self.f1 = self.rep_test +os.sep+"Dat"+os.sep+"TA3.csv"
         self.f2 = self.rep_test +os.sep+"Dat_ref"+os.sep+"TA3.csv"
-        df1=SMF.ReadCsv(self.f1,8,";").Desfile_2_Array()
-        df2=SMF.ReadCsv(self.f2,8,";").Desfile_2_Array()
+        df1=SMF.ReadCsv(self.f1,8,",").Desfile_2_Array()
+        df2=SMF.ReadCsv(self.f2,8,",").Desfile_2_Array()
         self.list_df=[df1,df2]
         self.b=SMF.CompDataFrames(self.list_df)
         self.c3=self.b.diff_pd_2(0.01)
@@ -79,7 +86,7 @@ class TestCompDataFrames(ut.TestCase):
         c2_=c2["diff_rel"].values[0]
         self.assertEqual(c2_.round(decimals=6), 0.679369,
                          "Dont read the right value")
- 
+
     def test_CompDataFrames_2(self):
         """ Test if the diff between f1 and f2 obove 0.1 are the good one"""
         c3_=self.c3["diff_rel"].values[0]
@@ -90,31 +97,31 @@ class TestCompDataFrames(ut.TestCase):
         """ Test if col_diff return the good columnu name """
         f2=self.b.col_diff(self.c3)
         self.assertEqual(f2[0], "Cour_H Beam1X-East", "Dont read the right value")
-    
+
     def tearDown(self):
         """ Reset test """
         pass
- 
+
 
 class TestPlotCsv(ut.TestCase):
     """ Test the PlotCsv Class """
-    
+
     def setUp(self):
         """ Set test up """
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestPlotCsv"
         self.f1 = self.rep_test+os.sep+"Dat"+os.sep+"TA3.csv"
         self.f2 = self.rep_test+os.sep+"Dat_ref"+os.sep+"TA3.csv"
         self.list_f=[self.f1,self.f2]
-        
-        df1=SMF.ReadCsv(self.f1,8,";").Desfile_2_Array()
-        df2=SMF.ReadCsv(self.f2,8,";").Desfile_2_Array()
+
+        df1=SMF.ReadCsv(self.f1,8,",").Desfile_2_Array()
+        df2=SMF.ReadCsv(self.f2,8,",").Desfile_2_Array()
         self.list_df=[df1,df2]
-        
+
         self.dest1=self.rep_test
         self.dest1_ref_w=self.rep_test+os.sep+"gra_ref_windows" 
         self.dest1_ref_l=self.rep_test+os.sep+"gra_ref_linux"
         self.dest1_ref_wc=self.rep_test+os.sep+"gra_ref_windows_PCCHALOPIN" 
-                
+
         self.b=SMF.CompDataFrames(self.list_df)
         c2=self.b.diff_pd_2(0.01)
         self.f=self.b.col_diff(c2)
@@ -139,10 +146,10 @@ class TestPlotCsv(ut.TestCase):
             comp=cmp(self.dest1+os.sep+"gra"+os.sep+res,
                      self.dest1_ref_l       +os.sep+res)
             self.assertTrue(comp, "Plot created have changed")
-        
+
         else:
             raise ValueError("Nor on Windows nether Linux")
-        
+
     def tearDown(self):
         """ Reset test """
         pass
@@ -163,7 +170,7 @@ class TestCompRep(ut.TestCase):
         """ Test if FindFilesInDir finds all .csv files in d1 and d2"""
         self.assertEqual(self.L[0], "TA3.csv", "The file TA3.csv was not found")
         self.assertEqual(self.L[1], "TA3_bis.csv", "The file TA3_bis.csv was not found")
-    
+
     def test_CompFilesInDir_1(self):
         """ Test if CompFilesInDir keep just files that are different between
         p1 and p2"""
@@ -175,7 +182,7 @@ class TestCompRep(ut.TestCase):
         """ Reset test """
         pass
 
-  
+
 class TestNonReg(ut.TestCase):
     """ Test the NonReg Class """
     def setUp(self):
@@ -188,7 +195,7 @@ class TestNonReg(ut.TestCase):
         self.lf=[f1,f2]
 
         self.n=8
-        self.s=";"
+        self.s=","
         self.e=1.e-4
         self.o    =self.rep_test+os.sep+"Comp"
         self.o_ref=self.rep_test+os.sep+"Comp_ref"
@@ -210,16 +217,16 @@ class TestNonReg(ut.TestCase):
         """ Test if RunNonReg produce the same results"""
         logging.debug("Diff file:%s and %s"%(self.lf[0],self.lf[1]))
         self.NR.RunNonRegFile(self.lf)
-        
+
         res1="TA3_0.0001.csv"
         f1=self.o+os.sep+res1
         f1_ref=self.o_ref+os.sep+res1
         Test=cmp(f1,f1_ref)
-        self.assertTrue(Test,"File %s not the same"%res1)
-        
+        self.assertFalse(Test,"File %s and %s are the same"%(f1,f1_ref))
+
         res1="Cour_H Beam1X-East.png"
         f1=self.o+os.sep+"gra"+os.sep+res1
-        
+
         if pf.system()=="Windows":
             if pf.version()=="6.1.7601":
                 f1_ref=self.o_ref+os.sep+"gra_ref_windows_PCCHALOPIN"+os.sep+res1
@@ -238,14 +245,14 @@ class TestNonReg(ut.TestCase):
 
         else:
             raise ValueError("Nor on Windows nether Linux")
-        
-        
+
+
     def tearDown(self):
         """ Reset test """
         #os.remove(self.o)
         pass
 
-   
+
 class TestConToCsv(ut.TestCase):
     """ Test the ConvToCsv Class """
     def setUp(self):
@@ -254,40 +261,40 @@ class TestConToCsv(ut.TestCase):
         self.f1_in =self.rep_test+os.sep+"testPltToCsv"+os.sep+"testPltToCsv_1.plt"
         self.f1_ref=self.rep_test+os.sep+"testPltToCsv"+os.sep+"testPltToCsv_1_ref.csv"
         self.f1_out=self.rep_test+os.sep+"testPltToCsv"+os.sep+"testPltToCsv_1.csv"
-                
+
         self.format="tecplot"
         self.f2_in =self.rep_test+os.sep+"testSavePltToCsv"+os.sep+"testPltToCsv_1.plt"
         self.f2_ref=self.rep_test+os.sep+"testSavePltToCsv"+os.sep+"testPltToCsv_1_ref.csv"
         self.f2_out=self.rep_test+os.sep+"testSavePltToCsv"+os.sep+"tmp"+os.sep+"testPltToCsv_1.csv"
         self.list_f2=[self.f2_in,self.f2_in]
-        
+
         self.f=SMF.ConvToCsv()
-        
-        
+
+
     def testPltToCsv_1(self):
         """ Test if the plt file converted is the same as before"""
         lf=self.f.plt_to_csv(self.f1_in)
         self.f.WriteToFile(lf,self.f1_out)
         self.assertTrue(cmp(self.f1_out,self.f1_ref,"File produced have changed"))
-        
+
     def testSavePltToCsv(self):
         """Test if a csv file is created in a tmp directory and 
         if that file haven't changed"""
         pattern = re.compile( r'tecplot', re.I)
-        
+
         if pattern.match(self.format):
             lf=self.f.SavePltToCsv(self.list_f2)
         self.assertTrue(cmp(lf[0],self.f2_out,"Csv file converted from plt are not the same"))
         self.assertTrue(cmp(lf[1],self.f2_out,"Csv file converted from plt are not the same"))
-                
+
     def testCleanTmp_1(self):
         """Test if the tmp dir have been removed when c=1"""
         pass
-    
+
     def testCleanTmp_2(self):
         """Test if the tmp dir have been removed when there is no c (default)"""
         pass
-    
+
     def testCleanTmp_3(self):
         """Test if the tmp dir have been kept when c=0"""
         pass
@@ -298,30 +305,30 @@ class TestConToCsv(ut.TestCase):
 
 class TestArgument(ut.TestCase):
     """Test class Argument"""
-    
+
     def setUp(self):
         """ Init class"""
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestArgument"
-        
-            
+        self.res1="TA3_0.0001.csv"
+
+
     def testArgsDef_1(self):
         """Test a command line to compare 2 files"""
-        res1="TA3_0.0001.csv"
         rep_test1=self.rep_test+os.sep+"testArgsDef_1"
-        
-        p1=rep_test1+os.sep+"Dat"
-        p2=rep_test1+os.sep+"Dat_ref"
-        f1=p1+os.sep+"TA3.csv"
-        f2=p2+os.sep+"TA3.csv"
+
+        p1 = rep_test1+os.sep+"Dat"
+        p2 = rep_test1+os.sep+"Dat_ref"
+        f1 = p1+os.sep+"TA3.csv"
+        f2 = p2+os.sep+"TA3.csv"
         #Create a string like in the command line:
         lf=f1+" "+f2
-        
+
         o    =rep_test1+os.sep+"Comp"
         o_ref=rep_test1+os.sep+"Comp_ref"
-        fres    =o    +os.sep+res1
-        fres_ref=o_ref+os.sep+res1
-        
-        arg=["-f",lf,"-l","warning","-o",o]
+        fres    =o    +os.sep+self.res1
+        fres_ref=o_ref+os.sep+self.res1
+
+        arg=["-f",lf,"-l","warning","-o",o,"-s",","]
         a=SMF.Argument(arg)
         args=a.ArgsDef()
         a.SetLog(args)
@@ -330,23 +337,22 @@ class TestArgument(ut.TestCase):
         logging.info('Finished')        
         Test=cmp(fres,fres_ref)
         self.assertTrue(Test,"File %s is not the same as %s"%(fres,fres_ref))
-        
+
     def testArgsDef_2(self):
         """Test a command line to compare 2 files"""
-        res1="TA3_0.0001.csv"
         rep_test1=self.rep_test+os.sep+"testArgsDef_2"
-        
+
         p1=rep_test1+os.sep+"Dat"
         p2=rep_test1+os.sep+"Dat_ref"
         #Create a string like in the command line:
         lp=p1+" "+p2
-        
+
         o    =rep_test1+os.sep+"Comp"
         o_ref=rep_test1+os.sep+"Comp_ref"
-        fres    =o    +os.sep+res1
-        fres_ref=o_ref+os.sep+res1
-        
-        arg=["-r",lp,"-l","debug","-o",o]
+        fres    =o    +os.sep+self.res1
+        fres_ref=o_ref+os.sep+self.res1
+
+        arg=["-r",lp,"-l","debug","-o",o,"-s",","]
         a=SMF.Argument(arg)
         args=a.ArgsDef()
         a.SetLog(args)
@@ -355,7 +361,7 @@ class TestArgument(ut.TestCase):
         logging.info('Finished')        
         Test=cmp(fres,fres_ref)
         self.assertTrue(Test,"File %s is not the same as %s"%(fres,fres_ref))
-        
+
 #def suite():
 #    suite = ut.TestSuite()
 #    suite.addTest(TestReadDes('test_header_Desfile_2_Array'))
@@ -364,6 +370,7 @@ class TestArgument(ut.TestCase):
 
 #List of TestSuites:
 suite=[]
+#suite.append(ut.TestLoader().loadTestsFromTestCase()
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestReadDes))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompDataFrames))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestPlotCsv))
