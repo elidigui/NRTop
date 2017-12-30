@@ -420,7 +420,7 @@ class Argument():
         numeric_level = getattr(logging, args.l.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % args.l)
-        #logging.basicConfig(filename='Trace.log', filemode='w',format='%(levelname)s; %(asctime)s; %(message)s', level=logging.DEBUG)
+        #logging.basicConfig(filename='NRTop.log', filemode='w',format='%(levelname)s; %(asctime)s; %(message)s', level=logging.DEBUG)
         logging.basicConfig(                                    format='%(levelname)s; %(asctime)s; %(message)s', level=numeric_level)
 
     def ArgsMain(self,args):
@@ -462,7 +462,8 @@ if __name__ == '__main__':
     #Lecture des arguments:
     a=Argument(sys.argv[1:])
     #Reads and record argument in variables (sys.args). 
-    #args=a.ArgsDef(sys.argv[1:]) #[1:] avoid the 2 first éelements ("python" and "Trace.py") that are in the command line
+    #args=a.ArgsDef(sys.argv[1:]) #[1:] avoid the 2 first éelements ("python"
+    #and "NRTop.py") that are in the command line
     args=a.ArgsDef()
     a.SetLog(args)
     logging.info('Started')

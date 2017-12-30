@@ -6,7 +6,7 @@ Created on Tue Jun 02 18:32:09 2015
 
 This program test all the methods of the stat_pressu module.
 """
-import Trace as SMF
+import NRTop as SMF
 import os
 import re
 import unittest as ut
