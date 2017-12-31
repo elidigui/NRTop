@@ -91,7 +91,7 @@ class CompDataFrames:
                 changed_from = df1.values[difference_locations]
                 changed_to = df2.values[difference_locations]
                 diff_rel = self.diff_rel_pd(changed_from,changed_to)
-                return (pd.DataFrame({'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
+                return (pd.DataFrame({'abs:':abscisse,'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
                                     index=changed.index))
         else:
             z = pd.DataFrame.dropna()
