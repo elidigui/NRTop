@@ -82,7 +82,7 @@ class TestCompDataFrames(ut.TestCase):
 
     def test_CompDataFrames_1(self):
         """ Test if the DataFrame of the difference of f1 and f2 are the good one"""
-        c2=self.b.diff_pd()
+        c2=self.b.diff_pd_2(0.01)
         c2_=c2["diff_rel"].values[0]
         self.assertEqual(c2_.round(decimals=6), 0.679369,
                          "Dont read the right value")

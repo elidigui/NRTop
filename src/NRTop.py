@@ -57,32 +57,6 @@ class CompDataFrames:
         self.df1 = list_df[0]
         self.df2 = list_df[1]
 
-    def diff_pd(self):
-        """Identify differences between two pandas DataFrames"""
-        df1 = self.df1
-        df2 = self.df2
-        if (df1.columns == df2.columns).all():
-            if df1.equals(df2):
-                #No Diff
-                return None
-            else:
-                #Diff
-                # need to account for np.nan != np.nan returning True
-                diff_mask = (df1 != df2) & ~(df1.isnull() & df2.isnull())
-                ne_stacked = diff_mask.stack()
-                changed = ne_stacked[ne_stacked]
-                changed.index.names = ['id', 'col']
-                difference_locations = np.where(diff_mask)
-                changed_from = df1.values[difference_locations]
-                changed_to = df2.values[difference_locations]
-                diff_rel = self.diff_rel_pd(changed_from,changed_to)
-                return (pd.DataFrame({'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
-                                    index = changed.index))
-        else:
-            logging.info("DataFrame column names are different")
-            z = pd.DataFrame.dropna()
-            return(z)
-
     def diff_rel_pd(self,a1,a2):
         """Calculate the relative difference of each terms of 2 arrays"""
         a = (a1-a2)/a1
@@ -112,6 +86,8 @@ class CompDataFrames:
                 changed = ne_stacked[ne_stacked]
                 changed.index.names = ['id', 'col']
                 difference_locations = np.where(diff_mask)
+                abscisse = df1.values[difference_locations[0],difference_locations[0]]
+                #print("diff loc=",difference_locations,"abs=",abscisse)
                 changed_from = df1.values[difference_locations]
                 changed_to = df2.values[difference_locations]
                 diff_rel = self.diff_rel_pd(changed_from,changed_to)
