@@ -6,13 +6,13 @@ Created on Tue Jun 02 18:32:09 2015
 
 This program test all the methods of the stat_pressu module.
 """
-import NRTop as SMF
 import os
 import re
 import unittest as ut
 from filecmp import cmp
 import platform as pf
 import logging
+import NRTop as SMF
 
 class TestReadDes(ut.TestCase):
     """ Test  ReadDes methods """
@@ -352,7 +352,7 @@ class TestArgument(ut.TestCase):
         fres    =o    +os.sep+self.res1
         fres_ref=o_ref+os.sep+self.res1
 
-        arg=["-r",lp,"-l","debug","-o",o,"-s",","]
+        arg=["-g",lp,"-l","debug","-o",o,"-s",","]
         a=SMF.Argument(arg)
         args=a.ArgsDef()
         a.SetLog(args)

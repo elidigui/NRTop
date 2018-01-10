@@ -13,6 +13,7 @@ import argparse
 import errno
 from filecmp import cmp
 import logging
+import json
 
 
 class ReadCsv:
@@ -156,14 +157,51 @@ class PlotCsv:
             plt.close()
 
 
+class RegProject:
+    """ Set a Non Regression project made of a list of Directories and files to
+    compare"""
+
+    def __init__(self, ProjectConf, NR):
+        """ Read the dictionnarie that contains the project structur """
+        self.inputfile = ProjectConf #File containing project structur
+        self.NR=NR #NonRegression 
+
+    def ReadInputFile(self):
+        """ Read the file containing the directories of the Non Regression
+        project """
+        try:
+            with open(self.inputfile) as conf_file:    
+                self.conf = json.load(conf_file) 
+        except Exception as error:
+            print("Can't open %s",self.inputfile)
+
+        pass
+
+    def RunRegProject(self):
+        """ Run a RunNonReg for each directory listed in the Project file """
+        for rep in self.conf["dirs"]:
+            l=[self.conf["projet"][0]+os.sep+rep,self.conf["projet"][1]+os.sep+rep]
+            self.NR.RunNonRegDir(l)
+
+#    def CheckFile(self):
+#        """ Check if files of a Directories exist """
+#        pass
+
+    def RunProject(self):
+        """ Walk in the project dictionnary and run NonReg for eatch file """
+        #use CompRep with a keyword so it checks list of file instead of files
+        #that maches a regexp
+        pass
+
+
 class CompRep:
     """ Compare csv files that have the same name in two directories """
 
-    def __init__(self,exp,d1,d2):
+    def __init__(self, exp, d1, d2):
         #  Name of the directories to compare:
         self.d1 = d1
         self.d2 = d2
-        self.Path = [self.d1,self.d2]
+        self.Path = [self.d1, self.d2]
         #Expression to match files in directories:
         self.exp= exp
 
@@ -376,7 +414,8 @@ class Argument():
         """ Return arguments in distinct variables"""
         parser = argparse.ArgumentParser(description='Compare plots of two series of result to chec the non regression')
         parser.add_argument('-f','--f_cas'         ,dest = 'f',type = str  ,nargs = '+',               help = 'Path of 2 files to compare')
-        parser.add_argument('-r','--f_rep'         ,dest = 'r',type = str  ,nargs = '+',               help = 'Paths of the 2 rep of files to compare')
+        parser.add_argument('-g','--f_rep'         ,dest = 'g',type = str  ,nargs = '+',               help = 'Paths of the 2 rep of files to compare')
+        parser.add_argument('-i','--f_pro'         ,dest = 'i',type = str  ,nargs = '+',               help = 'Paths to the  config file')
         parser.add_argument('-o','--out'           ,dest = 'o',type = str  ,nargs = '?',default = 'Comp',help = 'Directory where to save graphs and comparison file')
         parser.add_argument('-e','--err'           ,dest = 'e',type = float,nargs = '?',default = 1e-4,  help = 'Relative difference above wich it is taken into account')
         parser.add_argument('-s','--FieldSeparator',dest = 's',type = str  ,nargs = '?',default = ";",   help = 'Field Separator in the readen files')
@@ -419,7 +458,7 @@ class Argument():
             raise ValueError("No csv file are going to be created so clean have to be 0")
 
         #Run the comparison:
-        if (args.f and args.r):
+        if (args.f and args.g):
             raise ValueError("It is -f or -r, not both")
         else:
             NR=NonReg(args.n,args.s,args.e,args.o,args.x,args.c,args.z)
@@ -428,10 +467,15 @@ class Argument():
                 list_f=args.f[0].split()
                 #print(list_f)      
                 NR.RunNonRegFile(list_f)
-            elif args.r:
+            elif args.g:
                 """Comparison of two directories"""
-                list_d=args.r[0].split()
+                list_d=args.g[0].split()
                 NR.RunNonRegDir(list_d)
+            elif args.i:
+                R=RegProject(args.i,NR)
+                R.ReadInputFile()
+                R.RunRegProject()
+
 
 
 if __name__ == '__main__':
