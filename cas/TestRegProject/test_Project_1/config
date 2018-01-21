@@ -1,0 +1,39 @@
+{
+//'-s','--FieldSeparator',dest = 's',type = str  ,nargs = '?',default = ";",   help = 'Field Separator in the readen files')
+//FieldSeparator:";",
+
+//'-i','--f_pro'         ,dest = 'i',type = str  ,nargs = '+',               help = 'Paths to the  config file')
+Project:[{path:"../cas/TestNonReg1",DirToComp:["Dat","Dat_ref"]}
+         {path:"../cas/TestNonReg2",DirToComp:["Dat","Dat_ref"]}
+        ]
+
+//parser = argparse.ArgumentParser(description='Compare plots of two series of result to chec the non regression')
+//'-f','--f_cas'         ,dest = 'f',type = str  ,nargs = '+',               help = 'Path of 2 files to compare')
+//FilesToCompare:["file1","file2"],
+
+//'-g','--f_rep'         ,dest = 'g',type = str  ,nargs = '+',               help = 'Paths of the 2 rep of files to compare')
+//DirToCompare:["Dir1","Dir2"],
+
+//'-o','--out'           ,dest = 'o',type = str  ,nargs = '?',default = 'Comp',help = 'Directory where to save graphs and comparison file')
+//DirOut:"Comp",
+
+//'-e','--err'           ,dest = 'e',type = float,nargs = '?',default = 1e-4,  help = 'Relative difference above wich it is taken into account')
+//TresHold:1.e-3,
+
+//'-n','--NHeader'       ,dest = 'n',type = int  ,nargs = '?',default = 8,     help = 'Number of line to skip before the one line header of the csv file')
+//NHeader:8,
+
+//'-x','--Extention'     ,dest = 'x',type = str  ,nargs = '?',default = ".csv",help = 'Extentions of compared files')
+//ExtensionOfComparedFiles:".csv",
+
+//'-c','--ConvertedFormat',dest = 'c',type = str ,nargs = '?'               ,help = 'Type of file format to be converted. Accepted: Tecplot')
+//ConvertedFormat:".plt",
+
+//'-z','--clean'         ,dest = 'z',type = str  ,nargs = '?',default = 1     ,help = 'Clean files converted in csv format in the tmp dir.: 1: clean (Default), 0: keep')
+//Clean:1,
+
+//'-l','--logging'       ,dest = 'l',type = str  ,nargs = '?',default = "WARNING"  ,help = 'Log info: DEBUG, INFO, WARNING (default), ERROR, CRITICAL')
+//Logging:"WARNING"
+
+}
+ 

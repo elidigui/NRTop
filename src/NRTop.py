@@ -157,42 +157,6 @@ class PlotCsv:
             plt.close()
 
 
-class RegProject:
-    """ Set a Non Regression project made of a list of Directories and files to
-    compare"""
-
-    def __init__(self, ProjectConf, NR):
-        """ Read the dictionnarie that contains the project structur """
-        self.inputfile = ProjectConf #File containing project structur
-        self.NR=NR #NonRegression 
-
-    def ReadInputFile(self):
-        """ Read the file containing the directories of the Non Regression
-        project """
-        try:
-            with open(self.inputfile) as conf_file:    
-                self.conf = json.load(conf_file) 
-        except Exception as error:
-            print("Can't open %s",self.inputfile)
-
-        pass
-
-    def RunRegProject(self):
-        """ Run a RunNonReg for each directory listed in the Project file """
-        for rep in self.conf["dirs"]:
-            l=[self.conf["projet"][0]+os.sep+rep,self.conf["projet"][1]+os.sep+rep]
-            self.NR.RunNonRegDir(l)
-
-#    def CheckFile(self):
-#        """ Check if files of a Directories exist """
-#        pass
-
-    def RunProject(self):
-        """ Walk in the project dictionnary and run NonReg for eatch file """
-        #use CompRep with a keyword so it checks list of file instead of files
-        #that maches a regexp
-        pass
-
 
 class CompRep:
     """ Compare csv files that have the same name in two directories """
@@ -239,24 +203,55 @@ class CompRep:
 
 class NonReg:
     """ Tool to achive a non regression study """
-    def __init__(self,Nheader,sep,err,dir_out,exp,format,clean):
+           # NR=NonReg(args.n,args.s,args.e,args.o,args.x,args.c,args.z)
+    def __init__(self,args):
         #  Number of line to skip before the one line header of the csv file:
-        self.Nh  = Nheader
+        self.Nh  = args.n
         # Field separator:
-        self.sep = sep
+        self.sep = args.s
         # Treshold to select column (variable) that duiffer significantly:
-        self.err = err
+        self.err = args.e
         # Directory where diff.csv and Plots will be saved:
-        self.dout =  dir_out
+        self.dout =  args.o
         # String that match input files that are checked for the NR:
-        self.exp = exp
+        self.exp = args.x
         # Format of input files (csv (default),tecplot):
-        self.format = format
+        self.format = args.c
         # Cleanup:
-        self.clean = clean
+        self.clean = args.z
+
+    def ReadInputFile(self,inputfile):
+        """ Read the file containing the directories of the Non Regression
+        project """
+        #conf={}
+        #print(conf)
+        with open(inputfile,'r') as conf_file:    
+            conf=json.load(conf_file,encoding="utf-8") 
+        return(conf)
+
+#    def JsonRightEncoding(self,response_json):
+#        struct = {}
+#        try:
+#            response_json = str(response_json).strip("'<>() ").replace('\'', '\"')
+#            response_json = response_json.decode('utf-8').replace('\0', '')
+#            struct = json.loads(response_json)
+#        except:
+#            print('bad json: ', response_json)
+#        return struct
+
+#    def CheckFile(self):
+#        """ Check if files of a Directories exist """
+#        pass
+
+    def RunRegProject(self,conf):
+        """ Run a RunNonReg for each directory listed in the Project file """
+        for rep in conf["Project"]:
+            l=[rep.path+os.sep+rep.DirToComp[0],
+               rep.path+os.sep+rep.DirToComp[1]]
+            self.NR.RunNonRegDir(l)
 
     def RunNonRegDir(self,list_d):
-        """ Compare file in 2 dirs 2 by 2 in , create a diff.csv and 
+        """ Compare file in 2 dirs 2 by 2 , create a diff.csv and 
         plot graphs if the relative difference is greater than a treshold"""
         #Instantiate CompRep:
         logging.info("Directories %s and %s are compared:"%(list_d[0],list_d[1]))
@@ -459,9 +454,13 @@ class Argument():
 
         #Run the comparison:
         if (args.f and args.g):
-            raise ValueError("It is -f or -r, not both")
+            raise ValueError("It is -f or -g, not both")
+        elif (args.i and args.g):
+            raise ValueError("It is -i or -g, not both")
+        elif (args.i and args.f):
+            raise ValueError("It is -i or -f, not both")
         else:
-            NR=NonReg(args.n,args.s,args.e,args.o,args.x,args.c,args.z)
+            NR=NonReg(args)
             if args.f:
                 """ Comparison of two files """
                 list_f=args.f[0].split()
@@ -472,10 +471,8 @@ class Argument():
                 list_d=args.g[0].split()
                 NR.RunNonRegDir(list_d)
             elif args.i:
-                R=RegProject(args.i,NR)
-                R.ReadInputFile()
+                R.ReadInputFile(args.i)
                 R.RunRegProject()
-
 
 
 if __name__ == '__main__':

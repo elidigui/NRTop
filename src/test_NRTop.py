@@ -204,7 +204,7 @@ class TestNonReg(ut.TestCase):
         self.c="0"
 
         #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
-        self.NR=SMF.NonReg(self.n,self.s,self.e,self.o,self.x,self.c,self.z)
+        self.NR=SMF.NonReg(self)
 
     def test_NonReg(self):
         """ Test if NonReg reads good inputs"""
@@ -362,6 +362,41 @@ class TestArgument(ut.TestCase):
         Test=cmp(fres,fres_ref)
         self.assertTrue(Test,"File %s is not the same as %s"%(fres,fres_ref))
 
+class TestRegProject(ut.TestCase):
+    """Test class RegProject"""
+
+    def setUp(self):
+        """ Init class"""
+        self.rep_test = ".."+os.sep+"cas"+os.sep+"TestRegProject"
+        self.ProjectConfig="config"
+
+
+    def test_config_1(self):
+        """Test if the config file is readen correctly"""
+        #Config file's path:
+        fconf=self.rep_test+os.sep+"test_config_1"+os.sep+self.ProjectConfig
+        #Arguments:
+        arg=["-i",fconf,"-l","debug"]
+        a=SMF.Argument(arg)
+        #Create an args dictionnary with argparse:
+        args=a.ArgsDef()
+        #Instantiate a NonReg object:
+        NR=SMF.NonReg(args)
+        #Read the config file of the Non Reg Project:
+        conf=NR.ReadInputFile(args.i[0])
+        #Launch the project
+        #NR.RunRegProject()
+
+        rep=conf['Project']
+        D1=rep[0]['path']+os.sep+rep[0]['DirToComp'][0]
+        D2=rep[0]['path']+os.sep+rep[0]['DirToComp'][1]
+        D3=rep[1]['path']+os.sep+rep[1]['DirToComp'][0]
+        D4=rep[1]['path']+os.sep+rep[1]['DirToComp'][1]
+        self.assertEqual(D1,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat"    ,"Not the good config Proj1's 1st Path")
+        self.assertEqual(D2,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat_ref","Not the good config Proj1's 2nd Path")
+        self.assertEqual(D3,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat"    ,"Not the good config Proj2's 1st Path")
+        self.assertEqual(D4,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat_ref","Not the good config Proj2's 2nd Path")
+
 #def suite():
 #    suite = ut.TestSuite()
 #    suite.addTest(TestReadDes('test_header_Desfile_2_Array'))
@@ -378,6 +413,7 @@ suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompRep))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestNonReg))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestConToCsv))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestArgument))
+suite.append(ut.TestLoader().loadTestsFromTestCase(TestRegProject))
 
 alltests = ut.TestSuite(suite)
 #suite2 = ut.TestLoader().loadTestsFromTestCase(TestToolDes)
