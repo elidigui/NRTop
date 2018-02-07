@@ -141,14 +141,8 @@ class PlotCsv:
         self.title =  "%s vs %s"%(self.f1,self.f2)
         #print self.title
         self.dest = dest+os.sep+"gra"
-        try:
-            os.mkdir(self.dest)
-            logging.debug("Dir. %s created"%self.dest)
-        except OSError as e:       
-            if e.errno == errno.EEXIST and os.path.isdir(self.dest):
-                pass
-            else:
-                raise       
+        mkrep(self.dest)
+        logging.debug("Dir. %s created"%self.dest)
 
     def plot_2_array(self):
         for col in self.lcol:
