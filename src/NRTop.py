@@ -258,7 +258,9 @@ class NonReg:
             l=[rep["path"]+os.sep+rep["DirToComp"][0],
                rep["path"]+os.sep+rep["DirToComp"][1]]
             logging.debug("RunNonRegProject")
-            print("l=",l)
+            #print("l=",l)
+            if rep["DirOut"]:
+                self.dout=rep["DirOut"]
             self.RunNonRegDir(l)
 
     def RunNonRegDir(self,list_d):

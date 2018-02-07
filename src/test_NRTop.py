@@ -192,6 +192,7 @@ class TestNonReg(ut.TestCase):
         self.repNRc= self.rep_tNR+os.sep+"test_config_1"
         self.repNR1= self.rep_tNR+os.sep+"test_NonRegProject_1"
         self.repP1= self.repNR1+os.sep+"TestNonReg1"
+        self.repP2= self.repNR1+os.sep+"TestNonReg2"
         self.repD1= self.repP1+os.sep+"Dat"
         self.repD1ref= self.repP1+os.sep+"Dat_ref"
        
@@ -309,10 +310,8 @@ class TestNonReg(ut.TestCase):
         """Test if a project is achived well"""
         #Config file's path:
         fconf=self.repNR1+os.sep+self.ProjectConfig
-        self.o = self.repNR1+os.sep+"Comp" #Path to the comparison folder
-        o_ok  = self.repNR1+os.sep+"Comp_ok" #Path to the comparison folder
         #Arguments:
-        arg=["-o",self.o,"-s",",","-i",fconf,"-l","debug"]
+        arg=["-s",",","-i",fconf,"-l","debug"]
         a=NRT.Argument(arg)
         #Create an args dictionnary with argparse:
         args=a.ArgsDef()
@@ -324,6 +323,40 @@ class TestNonReg(ut.TestCase):
         logging.info('Started')
         NR.RunNonRegProject(conf)
         logging.info('Finished')
+
+        o  = self.repP1+os.sep+"CompDiff" #Path to the comparison folder
+        o_ok  = self.repP1+os.sep+"Comp_ok" #Path to the comparison folder
+        res1="TA3_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        res1="TA4_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        o  = self.repP2+os.sep+"Comp" #Path to the comparison folder
+        o_ok  = self.repP2+os.sep+"Comp_ok" #Path to the comparison folder
+        res1="TA3_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        res1="TA4_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+
 
     def tearDown(self):
         """ Reset test """
