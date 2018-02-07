@@ -152,13 +152,11 @@ class PlotCsv:
             plt.plot(self.df1[self.t],self.df1[col],color = 'r',label = "1")
             plt.plot(self.df2[self.t],self.df2[col],color = 'b',label = "2")
             plt.legend(loc = 0)
-            #plt.grid()
             plt.grid(color = 'tab:gray', linestyle = '--', linewidth = 0.5)
-            nom_fig = self.dest+os.sep+col+".png"
+            nom_fig = self.dest+os.sep+col.replace(" ","_")+".png"
             logging.debug("File %s created"%nom_fig)
             plt.savefig(nom_fig,format = "png")
             plt.close()
-
 
 
 class CompRep:

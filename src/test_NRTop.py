@@ -130,7 +130,7 @@ class TestPlotCsv(ut.TestCase):
         """ Test if plot file are the same as before"""
         P=NRT.PlotCsv(self.list_f,self.list_df,self.f,self.dest1)
         P.plot_2_array()
-        res="Cour_H Beam1X-East.png"
+        res="Cour_H_Beam1X-East.png"
         if pf.system()=="Windows":
             if (pf.version()=="6.1.7601"):
                 comp=cmp(self.dest1+os.sep+"gra"+os.sep+res,
@@ -239,7 +239,7 @@ class TestNonReg(ut.TestCase):
         Test=cmp(f1,f1_ok)
         self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
 
-        res1="Cour_H Beam1X-East.png"
+        res1="Cour_H_Beam1X-East.png"
         f1=self.o+os.sep+"gra"+os.sep+res1
         fexist=os.path.isfile(f1)
         self.assertTrue(fexist,"%s does not exist"%f1)
