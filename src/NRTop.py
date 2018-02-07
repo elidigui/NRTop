@@ -101,7 +101,7 @@ class CompDataFrames:
                 changed_from = df1.values[difference_locations]
                 changed_to = df2.values[difference_locations]
                 diff_rel = self.diff_rel_pd(changed_from,changed_to)
-                return (pd.DataFrame({'abs:':abscisse,'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
+                return (pd.DataFrame({'abs':abscisse,'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
                                     index=changed.index))
         else:
             z = pd.DataFrame.dropna()
@@ -292,7 +292,7 @@ class NonReg:
         b = CompDataFrames(list_df)
 
         #Compute differences between 2 DataFrames:
-        c2 = b.diff_pd_2(self.err)
+        c2 = b.diff_pd_2(self.err).sort_index(level="col")
 
         f = os.path.basename(list_f[0])[:-4]
         if c2.empty:
