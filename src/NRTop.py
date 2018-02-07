@@ -15,6 +15,15 @@ from filecmp import cmp
 import logging
 import json
 
+def mkrep(rep):
+    #Name of the dir where csv file is going to be saved:
+    try:
+        os.mkdir(rep)
+    except OSError as e:       
+        if e.errno == errno.EEXIST and os.path.isdir(rep):
+            pass
+        else:
+            raise
 
 class ReadCsv:
     """ Read a csv file with a header and the name of the variable in a row"""
@@ -79,15 +88,15 @@ class CompDataFrames:
                 #Diff
                 logging.debug("Diff")
                 # need to account for np.nan != np.nan returning True*$
-                #TODO: Functionalise diff_mask to merge diff_pd_2 and diff_pd
                 #print(df1,df2)
+                #logging.debug('df1=%s; df2=%s'%(df1,df2))        
                 logging.debug('Finished')        
-                diff_mask = (df1 != df2) & ((df1-df2)/df1 >err) & ~(df1.isnull() & df2.isnull())
+                diff_mask = (df1 != df2) & ((df1-df2)/df1 >err) #& ~(df1.isnull() & df2.isnull())
                 ne_stacked = diff_mask.stack()
                 changed = ne_stacked[ne_stacked]
                 changed.index.names = ['id', 'col']
                 difference_locations = np.where(diff_mask)
-                abscisse = df1.values[difference_locations[0],difference_locations[0]]
+                abscisse = df1.values[difference_locations[0],0]
                 #print("diff loc=",difference_locations,"abs=",abscisse)
                 changed_from = df1.values[difference_locations]
                 changed_to = df2.values[difference_locations]
@@ -203,7 +212,7 @@ class CompRep:
 
 class NonReg:
     """ Tool to achive a non regression study """
-           # NR=NonReg(args.n,args.s,args.e,args.o,args.x,args.c,args.z)
+    #NR=NonReg(args.n,args.s,args.e,args.o,args.x,args.c,args.z)
     def __init__(self,args):
         #  Number of line to skip before the one line header of the csv file:
         self.Nh  = args.n
@@ -220,7 +229,7 @@ class NonReg:
         # Cleanup:
         self.clean = args.z
 
-    def ReadInputFile(self,inputfile):
+    def ReadConfigFile(self,inputfile):
         """ Read the file containing the directories of the Non Regression
         project """
         #conf={}
@@ -243,12 +252,14 @@ class NonReg:
 #        """ Check if files of a Directories exist """
 #        pass
 
-    def RunRegProject(self,conf):
+    def RunNonRegProject(self,conf):
         """ Run a RunNonReg for each directory listed in the Project file """
         for rep in conf["Project"]:
-            l=[rep.path+os.sep+rep.DirToComp[0],
-               rep.path+os.sep+rep.DirToComp[1]]
-            self.NR.RunNonRegDir(l)
+            l=[rep["path"]+os.sep+rep["DirToComp"][0],
+               rep["path"]+os.sep+rep["DirToComp"][1]]
+            logging.debug("RunNonRegProject")
+            print("l=",l)
+            self.RunNonRegDir(l)
 
     def RunNonRegDir(self,list_d):
         """ Compare file in 2 dirs 2 by 2 , create a diff.csv and 
@@ -283,7 +294,7 @@ class NonReg:
         df2 = ReadCsv(list_f[1],self.Nh,self.sep).Desfile_2_Array()
         list_df = [df1,df2]
 
-        #Create 2 DataFrames form the 2 files to compare:
+        #Create 2 DataFrames from the 2 files to compare:
         b = CompDataFrames(list_df)
 
         #Compute differences between 2 DataFrames:
@@ -293,8 +304,9 @@ class NonReg:
         if c2.empty:
             logging.info("No diff from %s"%f)
         else:
+            #Create the Comparation directory if it doesn't exist:
+            mkrep(self.dout)
             #Export the result in a csv file:
-
             fout = f+"_"+str(self.err)+".csv"
             dest=self.dout+os.sep+fout
             logging.debug("Diff file:%s"%dest)
@@ -312,7 +324,7 @@ class NonReg:
         if(self.format):
             if pattern.match(self.format):
                 c = ConvToCsv()
-                c.CleanTmp(self.clean,list_f)
+                c.CleanTmp(self0.clean,list_f)
 
 
 class ConvToCsv():
@@ -362,13 +374,8 @@ class ConvToCsv():
             lf = f.plt_to_csv(fi)
             #Name of the dir where csv file is going to be saved:
             rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
-            try:
-                os.mkdir(rep_tmp)
-            except OSError as e:       
-                if e.errno == errno.EEXIST and os.path.isdir(rep_tmp):
-                    pass
-                else:
-                    raise
+            #Create Dir if it doesn't exists:
+            mkrep(rep_tmp)
             fo_name = os.path.basename(fi)[:-4]+".csv"
             fo = rep_tmp+os.sep+fo_name
             f.WriteToFile(lf,fo)
@@ -387,7 +394,7 @@ class ConvToCsv():
             for i,fi in enumerate(list_f):
                 rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
                 os.remove(rep_tmp)
-                logging.debug('Dir. %s removed"%rep_tmp')
+                logging.debug('Dir. %s removed'%rep_tmp)
         else:
             for i,fi in enumerate(list_f):
                 rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
@@ -430,8 +437,11 @@ class Argument():
         numeric_level = getattr(logging, args.l.upper(), None)
         if not isinstance(numeric_level, int):
             raise ValueError('Invalid log level: %s' % args.l)
+        logging.basicConfig(filename='NRTop.log',
+                filemode='w',format='%(levelname)s; %(asctime)s; %(message)s',
+                level=numeric_level)
         #logging.basicConfig(filename='NRTop.log', filemode='w',format='%(levelname)s; %(asctime)s; %(message)s', level=logging.DEBUG)
-        logging.basicConfig(                                    format='%(levelname)s; %(asctime)s; %(message)s', level=numeric_level)
+        #logging.basicConfig(                                    format='%(levelname)s; %(asctime)s; %(message)s', level=numeric_level)
 
     def ArgsMain(self,args):
          #Patern that match tecplot whatever is its case
@@ -471,8 +481,8 @@ class Argument():
                 list_d=args.g[0].split()
                 NR.RunNonRegDir(list_d)
             elif args.i:
-                R.ReadInputFile(args.i)
-                R.RunRegProject()
+                R.ReadConfigFile(args.i)
+                R.RunNonRegProject()
 
 
 if __name__ == '__main__':
