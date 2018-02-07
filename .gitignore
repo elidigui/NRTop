@@ -4,3 +4,5 @@ cas/FMOD5/
 cas/test.py
 bac_a_sable
 __pycache__
+cas/*/Comp/
+cas/*/CompDiff/
