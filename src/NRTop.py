@@ -138,7 +138,7 @@ class PlotCsv:
         self.lcol = lcol
         #Name of the common abscisse:
         self.t    = self.df1.keys()[0]
-        self.title =  "%s vs %s"%(self.f1,self.f2)
+        self.title =  "1:%s vs\n 2:%s"%(self.f1,self.f2)
         #print self.title
         self.dest = dest+os.sep+"gra"
         mkrep(self.dest)
