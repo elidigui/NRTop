@@ -482,14 +482,13 @@ class TestArgument(ut.TestCase):
 
 #List of TestSuites:
 suite=[]
-#suite.append(ut.TestLoader().loadTestsFromTestCase()
-#suite.append(ut.TestLoader().loadTestsFromTestCase(TestReadDes))
-#suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompDataFrames))
-#suite.append(ut.TestLoader().loadTestsFromTestCase(TestPlotCsv))
-#suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompRep))
+suite.append(ut.TestLoader().loadTestsFromTestCase(TestReadDes))
+suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompDataFrames))
+suite.append(ut.TestLoader().loadTestsFromTestCase(TestPlotCsv))
+suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompRep))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestNonReg))
-#suite.append(ut.TestLoader().loadTestsFromTestCase(TestConToCsv))
-#suite.append(ut.TestLoader().loadTestsFromTestCase(TestArgument))
+suite.append(ut.TestLoader().loadTestsFromTestCase(TestConToCsv))
+suite.append(ut.TestLoader().loadTestsFromTestCase(TestArgument))
 
 alltests = ut.TestSuite(suite)
 #suite2 = ut.TestLoader().loadTestsFromTestCase(TestToolDes)
