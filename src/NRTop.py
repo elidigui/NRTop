@@ -246,9 +246,9 @@ class NonReg:
     def RunRegProject(self,conf):
         """ Run a RunNonReg for each directory listed in the Project file """
         for rep in conf["Project"]:
-            l=[rep.path+os.sep+rep.DirToComp[0],
-               rep.path+os.sep+rep.DirToComp[1]]
-            self.NR.RunNonRegDir(l)
+            l=[rep["path"]+os.sep+rep["DirToComp"][0],
+               rep["path"]+os.sep+rep["DirToComp"][1]]
+            self.RunNonRegDir(l)
 
     def RunNonRegDir(self,list_d):
         """ Compare file in 2 dirs 2 by 2 , create a diff.csv and 
