@@ -12,7 +12,7 @@ import unittest as ut
 from filecmp import cmp
 import platform as pf
 import logging
-import NRTop as SMF
+import NRTop as NRT
 
 class TestReadDes(ut.TestCase):
     """ Test  ReadDes methods """
@@ -27,39 +27,39 @@ class TestReadDes(ut.TestCase):
 
     def test_header_Desfile_2_Array(self):
         """ Test if the function read the header of a .des file """
-        a = SMF.ReadCsv(self.test2,48,"\s+")
+        a = NRT.ReadCsv(self.test2,48,"\s+")
         a_t = a.Desfile_2_Array()
         self.assertEqual(a_t.keys()[1], "ALIM_EIM",
                          "Don't read the write header")
 
     def test_value_Desfile_2_Array_1(self):
         """ Test if the function reada value of a .des file """
-        a = SMF.ReadCsv(self.test2, 48,"\s+")
+        a = NRT.ReadCsv(self.test2, 48,"\s+")
         a_t = a.Desfile_2_Array()
         self.assertEqual(a_t["ALIM_EIM"][0].round(decimals=6), 2.0999E-002,
                          "Dont read the right value")
 
     def test_value_Desfile_2_Array_2(self):
         """ Test if the function read a key of a .csv file """
-        df1=SMF.ReadCsv(self.f1,8,";").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,";").Desfile_2_Array()
         self.assertEqual(df1.keys()[2], "Cour_H Beam3Z-UP",
                          "Dont read the right key")
 
     def test_value_Desfile_2_Array_3(self):
         """ Test if the function reada value of a .csv file """
-        df1=SMF.ReadCsv(self.f1,8,";").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,";").Desfile_2_Array()
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
 
     def test_value_Desfile_2_Array_4(self):
         """ Test if the function reada value of a .csv file """
-        df1=SMF.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
 
     def test_find_line(self):
         """ Test if it find the good line in test2.des"""
-        a = SMF.ReadCsv(self.test2,0,"\s+")
+        a = NRT.ReadCsv(self.test2,0,"\s+")
         s=  a.find_line(self.test2,"Empty_Category20")
         self.assertEqual(s, 38, "Dont find the write line")
 
@@ -74,10 +74,10 @@ class TestCompDataFrames(ut.TestCase):
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestCompDataFrames"
         self.f1 = self.rep_test +os.sep+"Dat"+os.sep+"TA3.csv"
         self.f2 = self.rep_test +os.sep+"Dat_ref"+os.sep+"TA3.csv"
-        df1=SMF.ReadCsv(self.f1,8,",").Desfile_2_Array()
-        df2=SMF.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,",").Desfile_2_Array()
+        df2=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
         self.list_df=[df1,df2]
-        self.b=SMF.CompDataFrames(self.list_df)
+        self.b=NRT.CompDataFrames(self.list_df)
         self.c3=self.b.diff_pd_2(0.01)
 
     def test_CompDataFrames_1(self):
@@ -113,8 +113,8 @@ class TestPlotCsv(ut.TestCase):
         self.f2 = self.rep_test+os.sep+"Dat_ref"+os.sep+"TA3.csv"
         self.list_f=[self.f1,self.f2]
 
-        df1=SMF.ReadCsv(self.f1,8,",").Desfile_2_Array()
-        df2=SMF.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,",").Desfile_2_Array()
+        df2=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
         self.list_df=[df1,df2]
 
         self.dest1=self.rep_test
@@ -122,15 +122,15 @@ class TestPlotCsv(ut.TestCase):
         self.dest1_ref_l=self.rep_test+os.sep+"gra_ref_linux"
         self.dest1_ref_wc=self.rep_test+os.sep+"gra_ref_windows_PCCHALOPIN" 
 
-        self.b=SMF.CompDataFrames(self.list_df)
+        self.b=NRT.CompDataFrames(self.list_df)
         c2=self.b.diff_pd_2(0.01)
         self.f=self.b.col_diff(c2)
 
     def test_Plot_2_array(self):
         """ Test if plot file are the same as before"""
-        P=SMF.PlotCsv(self.list_f,self.list_df,self.f,self.dest1)
+        P=NRT.PlotCsv(self.list_f,self.list_df,self.f,self.dest1)
         P.plot_2_array()
-        res="Cour_H Beam1X-East.png"
+        res="Cour_H_Beam1X-East.png"
         if pf.system()=="Windows":
             if (pf.version()=="6.1.7601"):
                 comp=cmp(self.dest1+os.sep+"gra"+os.sep+res,
@@ -163,7 +163,7 @@ class TestCompRep(ut.TestCase):
         self.p1 = self.rep_test+os.sep+"Dat"
         self.p2 = self.rep_test+os.sep+"Dat_ref"
         self.exp=".csv"
-        self.C=SMF.CompRep(".csv",self.p1,self.p2)
+        self.C=NRT.CompRep(".csv",self.p1,self.p2)
         self.L=self.C.FindFilesInDir()
 
     def test_FindFilesInDir_1(self):
@@ -185,66 +185,177 @@ class TestCompRep(ut.TestCase):
 
 class TestNonReg(ut.TestCase):
     """ Test the NonReg Class """
+
     def setUp(self):
         """ Set test  """
-        self.rep_test = ".."+os.sep+"cas"+os.sep+"TestNonReg"
-        p1=self.rep_test+os.sep+"Dat"
-        p2=self.rep_test+os.sep+"Dat_ref"
-        f1=p1+os.sep+"TA3.csv"
-        f2=p2+os.sep+"TA3.csv"
-        self.lf=[f1,f2]
+        self.rep_tNR = ".."+os.sep+"cas"+os.sep+"TestNonReg"
+        self.repNRc= self.rep_tNR+os.sep+"test_config_1"
+        self.repNR1= self.rep_tNR+os.sep+"test_NonRegProject_1"
+        self.repP1= self.repNR1+os.sep+"TestNonReg1"
+        self.repP2= self.repNR1+os.sep+"TestNonReg2"
+        self.repD1= self.repP1+os.sep+"Dat"
+        self.repD1ref= self.repP1+os.sep+"Dat_ref"
+       
+        self.n=8 #Number of line to jump in the compared files
+        self.s="," #Field separator in the compared files
+        self.e=1.e-4 # Relative error treshold
+        self.x=".csv" #Compared file's extension
+        self.z="0"   # Removing  tmp files created if format=tecplot "1=yes, 0=no"
+        self.c="csv" # Format of thhe compared file
+        self.o="Comp"
 
-        self.n=8
-        self.s=","
-        self.e=1.e-4
-        self.o    =self.rep_test+os.sep+"Comp"
-        self.o_ref=self.rep_test+os.sep+"Comp_ref"
-        self.x=".csv"
-        self.z=""
-        self.c="0"
+        self.ProjectConfig="config"
 
-        #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
-        self.NR=SMF.NonReg(self)
 
-    def test_NonReg(self):
+    def test_NonReg_init(self):
         """ Test if NonReg reads good inputs"""
+        self.NR=NRT.NonReg(self)
         self.assertEqual(self.NR.Nh  ,self.n, "Nheader not readen")
         self.assertEqual(self.NR.sep ,self.s, "Field separator not readen")
         self.assertEqual(self.NR.err ,self.e, "Diff treshold  not readen")
         self.assertEqual(self.NR.dout,self.o, "Output dir not readen ")
 
-    def test_RunNonReg(self):
+    def test_NonRegFile_1(self):
         """ Test if RunNonReg produce the same results"""
-        logging.debug("Diff file:%s and %s"%(self.lf[0],self.lf[1]))
-        self.NR.RunNonRegFile(self.lf)
+        p1=self.repD1
+        p2=self.repD1ref
+
+        f1=p1+os.sep+"TA3.csv"
+        f2=p2+os.sep+"TA3.csv"
+        lf=[f1,f2]
+        logging.debug("Diff file:%s and %s"%(lf[0],lf[1]))
+
+        self.o = self.repD1+os.sep+"Comp" #Path to the comparison folder
+        o_ok  = self.repD1+os.sep+"Comp_ok" #Path to the comparison folder
+        res1="TA3_0.0001.csv"
+
+        #Instantiate a NonReg object with arguments in self:
+        self.NR=NRT.NonReg(self)
+        #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
+        self.NR.RunNonRegFile(lf)
+
+        f1=self.o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        res1="Cour_H_Beam1X-East.png"
+        f1=self.o+os.sep+"gra"+os.sep+res1
+        fexist=os.path.isfile(f1)
+        self.assertTrue(fexist,"%s does not exist"%f1)
+#        if pf.system()=="Windows":
+#            if pf.version()=="6.1.7601":
+#                f1_ref=o_ok+os.sep+"gra_ref_windows_PCCHALOPIN"+os.sep+res1
+#                comp=cmp(f1,f1_ref)
+#                self.assertTrue(comp, "Plot created have changed")
+#            elif pf.processor()=="Intel64 Family 6 Model 30 Stepping 5, GenuineIntel":
+#                f1_ref=o_ok+os.sep+"gra_ref_windows"+os.sep+res1
+#                comp=cmp(f1,f1_ref)
+#                self.assertTrue(comp, "Plot created have changed")
+#            else:
+#                print("Unknown Systeme")
+#        elif pf.system()=="Linux":
+#            f1_ref=o_ok+os.sep+"gra_ref_linux"+os.sep+res1
+#            comp=cmp(f1,f1_ref)
+#            self.assertTrue(comp, "Plot created have changed")
+#        else:
+#            raise ValueError("Nor on Windows nether Linux")
+
+    def test_RunNonRegDir_1(self):
+        p1=self.repD1
+        p2=self.repD1ref
+        lp=[p1,p2]
+        self.o = self.repP1+os.sep+"Comp" #Path to the comparison folder
+        o_ok  = self.repP1+os.sep+"Comp_ok" #Path to the comparison folder
+        #Instantiate a NonReg object with arguments in self:
+        self.NR=NRT.NonReg(self)
+        self.assertEqual(self.NR.dout,self.o, "Output dir not readen ")
+        #Create TA3_0.0001.csv in self.o and plot Cour_H Beam1X-East.png in self.o/gra
+        self.NR.RunNonRegDir(lp)
 
         res1="TA3_0.0001.csv"
         f1=self.o+os.sep+res1
-        f1_ref=self.o_ref+os.sep+res1
-        Test=cmp(f1,f1_ref)
-        self.assertFalse(Test,"File %s and %s are the same"%(f1,f1_ref))
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
 
-        res1="Cour_H Beam1X-East.png"
-        f1=self.o+os.sep+"gra"+os.sep+res1
+    def test_ReadConfigFile_1(self):
+        """Test if the config file is readen correctly"""
+        #Config file's path:
+        fconf=self.repNRc+os.sep+self.ProjectConfig
+        #Arguments:
+        arg=["-i",fconf,"-l","debug"]
+        a=NRT.Argument(arg)
+        #Create an args dictionnary with argparse:
+        args=a.ArgsDef()
+        #Instantiate a NonReg object:
+        logging.info('Started')
+        NR=NRT.NonReg(args)
+        logging.info('Finished')
+        #Read the config file of the Non Reg Project:
+        conf=NR.ReadConfigFile(args.i[0])
 
-        if pf.system()=="Windows":
-            if pf.version()=="6.1.7601":
-                f1_ref=self.o_ref+os.sep+"gra_ref_windows_PCCHALOPIN"+os.sep+res1
-                comp=cmp(f1,f1_ref)
-                self.assertTrue(comp, "Plot created have changed")
-            elif pf.processor()=="Intel64 Family 6 Model 30 Stepping 5, GenuineIntel":
-                f1_ref=self.o_ref+os.sep+"gra_ref_windows"+os.sep+res1
-                comp=cmp(f1,f1_ref)
-                self.assertTrue(comp, "Plot created have changed")
-            else:
-                print("Unknown Systeme")
-        elif pf.system()=="Linux":
-            f1_ref=self.o_ref+os.sep+"gra_ref_linux"+os.sep+res1
-            comp=cmp(f1,f1_ref)
-            self.assertTrue(comp, "Plot created have changed")
+        rep=conf['Project']
+        D1=rep[0]['path']+os.sep+rep[0]['DirToComp'][0]
+        D2=rep[0]['path']+os.sep+rep[0]['DirToComp'][1]
+        D3=rep[1]['path']+os.sep+rep[1]['DirToComp'][0]
+        D4=rep[1]['path']+os.sep+rep[1]['DirToComp'][1]
+        self.assertEqual(D1,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat"    ,"Not the good config Proj1's 1st Path")
+        self.assertEqual(D2,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat_ref","Not the good config Proj1's 2nd Path")
+        self.assertEqual(D3,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat"    ,"Not the good config Proj2's 1st Path")
+        self.assertEqual(D4,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat_ref","Not the good config Proj2's 2nd Path")
 
-        else:
-            raise ValueError("Nor on Windows nether Linux")
+    def test_RunNonRegProject_1(self):
+        """Test if a project is achived well"""
+        #Config file's path:
+        fconf=self.repNR1+os.sep+self.ProjectConfig
+        #Arguments:
+        arg=["-s",",","-i",fconf,"-l","debug"]
+        a=NRT.Argument(arg)
+        #Create an args dictionnary with argparse:
+        args=a.ArgsDef()
+        #Instantiate a NonReg object:
+        NR=NRT.NonReg(args)
+        #Read the config file of the Non Reg Project:
+        conf=NR.ReadConfigFile(args.i[0])
+        #Launch the project
+        logging.info('Started')
+        NR.RunNonRegProject(conf)
+        logging.info('Finished')
+
+        o  = self.repP1+os.sep+"CompDiff" #Path to the comparison folder
+        o_ok  = self.repP1+os.sep+"Comp_ok" #Path to the comparison folder
+        res1="TA3_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        res1="TA4_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        o  = self.repP2+os.sep+"Comp" #Path to the comparison folder
+        o_ok  = self.repP2+os.sep+"Comp_ok" #Path to the comparison folder
+        res1="TA3_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        res1="TA4_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
 
 
     def tearDown(self):
@@ -268,7 +379,7 @@ class TestConToCsv(ut.TestCase):
         self.f2_out=self.rep_test+os.sep+"testSavePltToCsv"+os.sep+"tmp"+os.sep+"testPltToCsv_1.csv"
         self.list_f2=[self.f2_in,self.f2_in]
 
-        self.f=SMF.ConvToCsv()
+        self.f=NRT.ConvToCsv()
 
 
     def testPltToCsv_1(self):
@@ -311,7 +422,6 @@ class TestArgument(ut.TestCase):
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestArgument"
         self.res1="TA3_0.0001.csv"
 
-
     def testArgsDef_1(self):
         """Test a command line to compare 2 files"""
         rep_test1=self.rep_test+os.sep+"testArgsDef_1"
@@ -329,7 +439,7 @@ class TestArgument(ut.TestCase):
         fres_ref=o_ref+os.sep+self.res1
 
         arg=["-f",lf,"-l","warning","-o",o,"-s",","]
-        a=SMF.Argument(arg)
+        a=NRT.Argument(arg)
         args=a.ArgsDef()
         a.SetLog(args)
         logging.info('Started')
@@ -353,7 +463,7 @@ class TestArgument(ut.TestCase):
         fres_ref=o_ref+os.sep+self.res1
 
         arg=["-g",lp,"-l","debug","-o",o,"-s",","]
-        a=SMF.Argument(arg)
+        a=NRT.Argument(arg)
         args=a.ArgsDef()
         a.SetLog(args)
         logging.info('Started')
@@ -362,68 +472,8 @@ class TestArgument(ut.TestCase):
         Test=cmp(fres,fres_ref)
         self.assertTrue(Test,"File %s is not the same as %s"%(fres,fres_ref))
 
-class TestRegProject(ut.TestCase):
-    """Test class RegProject"""
 
-    def setUp(self):
-        """ Init class"""
-        self.rep_test = ".."+os.sep+"cas"+os.sep+"TestRegProject"
-        self.ProjectConfig="config"
-
-
-    def test_config_1(self):
-        """Test if the config file is readen correctly"""
-        #Config file's path:
-        fconf=self.rep_test+os.sep+"test_config_1"+os.sep+self.ProjectConfig
-        #Arguments:
-        arg=["-i",fconf,"-l","debug"]
-        a=SMF.Argument(arg)
-        #Create an args dictionnary with argparse:
-        args=a.ArgsDef()
-        #Instantiate a NonReg object:
-        NR=SMF.NonReg(args)
-        #Read the config file of the Non Reg Project:
-        conf=NR.ReadInputFile(args.i[0])
-        #Launch the project
-        NR.RunRegProject(conf)
-
-        rep=conf['Project']
-        D1=rep[0]['path']+os.sep+rep[0]['DirToComp'][0]
-        D2=rep[0]['path']+os.sep+rep[0]['DirToComp'][1]
-        D3=rep[1]['path']+os.sep+rep[1]['DirToComp'][0]
-        D4=rep[1]['path']+os.sep+rep[1]['DirToComp'][1]
-        self.assertEqual(D1,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat"    ,"Not the good config Proj1's 1st Path")
-        self.assertEqual(D2,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat_ref","Not the good config Proj1's 2nd Path")
-        self.assertEqual(D3,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat"    ,"Not the good config Proj2's 1st Path")
-        self.assertEqual(D4,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat_ref","Not the good config Proj2's 2nd Path")
-
-    def test_Project_1(self):
-        """Test if the config file is readen correctly"""
-        #Config file's path:
-        fconf=self.rep_test+os.sep+"test_Project_1"+os.sep+self.ProjectConfig
-        #Arguments:
-        arg=["-i",fconf,"-l","debug"]
-        a=SMF.Argument(arg)
-        #Create an args dictionnary with argparse:
-        args=a.ArgsDef()
-        #Instantiate a NonReg object:
-        NR=SMF.NonReg(args)
-        #Read the config file of the Non Reg Project:
-        conf=NR.ReadInputFile(args.i[0])
-        #Launch the project
-        NR.RunRegProject(conf)
-
-        rep=conf['Project']
-        D1=rep[0]['path']+os.sep+rep[0]['DirToComp'][0]
-        D2=rep[0]['path']+os.sep+rep[0]['DirToComp'][1]
-        D3=rep[1]['path']+os.sep+rep[1]['DirToComp'][0]
-        D4=rep[1]['path']+os.sep+rep[1]['DirToComp'][1]
-        self.assertEqual(D1,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat"    ,"Not the good config Proj1's 1st Path")
-        self.assertEqual(D2,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat_ref","Not the good config Proj1's 2nd Path")
-        self.assertEqual(D3,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat"    ,"Not the good config Proj2's 1st Path")
-        self.assertEqual(D4,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat_ref","Not the good config Proj2's 2nd Path")
-
-#def suite():
+        #def suite():
 #    suite = ut.TestSuite()
 #    suite.addTest(TestReadDes('test_header_Desfile_2_Array'))
 #    suite.addTest(TestReadDes('test_value_Desfile_2_Array'))
@@ -431,7 +481,6 @@ class TestRegProject(ut.TestCase):
 
 #List of TestSuites:
 suite=[]
-#suite.append(ut.TestLoader().loadTestsFromTestCase()
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestReadDes))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompDataFrames))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestPlotCsv))
@@ -439,7 +488,6 @@ suite.append(ut.TestLoader().loadTestsFromTestCase(TestCompRep))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestNonReg))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestConToCsv))
 suite.append(ut.TestLoader().loadTestsFromTestCase(TestArgument))
-suite.append(ut.TestLoader().loadTestsFromTestCase(TestRegProject))
 
 alltests = ut.TestSuite(suite)
 #suite2 = ut.TestLoader().loadTestsFromTestCase(TestToolDes)
