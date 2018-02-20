@@ -3,3 +3,6 @@ cas/FMOD5/
 *.swp
 cas/test.py
 bac_a_sable
+__pycache__
+cas/*/Comp/
+cas/*/CompDiff/
