@@ -114,7 +114,7 @@ class CompDataFrames:
         #Reset the diff DataFrame so it does'nt have multiple index and 
         #select the relative error column:
         d2 = c2.reset_index().col
-        #Create the set of the column names so there is no doble elements:
+        #Create the set of the column names so there is no dobble elements:
         e2 = set(d2)
         #Create a list with that set
         f2 = sorted(e2)
@@ -127,7 +127,7 @@ class CompDataFrames:
 
 class PlotCsv:
     """ Plot panda DataFrames in a dir. gra in the dir. "dest"""
-    def __init__(self,list_f,list_df,lcol,dest):
+    def __init__(self,list_f,list_df,lcol,dest,PltFrmt):
         #Name of the files to compare:
         self.f1  = list_f[0]
         self.f2  = list_f[1]
@@ -136,6 +136,8 @@ class PlotCsv:
         self.df2  = list_df[1]
         #List of the column name to plot:
         self.lcol = lcol
+        #Plot Format:
+        self.PlotFormat=PltFrmt
         #Name of the common abscisse:
         self.t    = self.df1.keys()[0]
         self.title =  "1:%s vs\n 2:%s"%(self.f1,self.f2)
@@ -144,20 +146,54 @@ class PlotCsv:
         mkrep(self.dest)
         logging.debug("Dir. %s created"%self.dest)
 
-    def plot_2_array(self):
+    def plot_list_of_col(self):
+        """ Plot a list of 2 arrays with matplotlib """
         for col in self.lcol:
-            plt.title(self.title,fontsize = 8)
-            plt.xlabel(self.t)
-            plt.ylabel(col)
-            plt.plot(self.df1[self.t],self.df1[col],color = 'r',label = "1")
-            plt.plot(self.df2[self.t],self.df2[col],color = 'b',label = "2")
-            plt.legend(loc = 0)
-            plt.grid(color = 'tab:gray', linestyle = '--', linewidth = 0.5)
-            nom_fig = self.dest+os.sep+col.replace(" ","_")+".png"
-            logging.debug("File %s created"%nom_fig)
-            plt.savefig(nom_fig,format = "png")
-            plt.close()
+            if self.PlotFormat == "matplotlib":
+                self.plot_mtpltlib(col)
+            elif self.PlotFormat == "gnuplot":
+                self.plot_gnuplot(col)
 
+    def plot_mtpltlib(self,col):
+        """ Plot 2 arrays with matplotlib """
+        plt.title(self.title,fontsize = 8)
+        plt.xlabel(self.t)
+        plt.ylabel(col)
+        plt.plot(self.df1[self.t],self.df1[col],color = 'r',label = "1")
+        plt.plot(self.df2[self.t],self.df2[col],color = 'b',label = "2")
+        plt.legend(loc = 0)
+        plt.grid(color = 'tab:gray', linestyle = '--', linewidth = 0.5)
+        nom_fig = self.dest+os.sep+col.replace(" ","_")+".png"
+        logging.debug("File %s created"%nom_fig)
+        plt.savefig(nom_fig,format = "png")
+        plt.close()
+
+    def plot_gnuplot(self):
+        """ Plot 2 arrays with gnuplot
+            Use a template, adapte it, use it to save a png plot 
+            and save it or not """
+        gtmp=load_template("gnuplot")    
+        gtmp.replace("__title__",self.title)
+        gtmp.replace("__x__",self.t)
+        gtmp.replace("__y__",col)
+        gtmp.replace("path1",self.f1)
+        gtmp.replace("path2",self.f2)
+        nom_fig = self.dest+os.sep+col.replace(" ","_")
+        nfig_bitmap=nom_fig+".png"
+        nfig_gnuplot=nom_fig+".gp"
+        gtmp.replace("__nomfig__",nfig_bitmap)
+        self.save_template(gtmp,nfig_gnuplot)
+        self.exec_template("gnuplot",nfig_gnuplot)
+
+
+    def load_template(self):
+        pass
+
+    def save_template(self,tmp,f):
+        pass
+
+    def exec_template(self,app,f):
+        pass
 
 class CompRep:
     """ Compare csv files that have the same name in two directories """
@@ -220,6 +256,8 @@ class NonReg:
         self.format = args.c
         # Cleanup:
         self.clean = args.z
+        # PlotFormat:
+        self.PlotFormat = "matplotlib"
 
     def ReadConfigFile(self,inputfile):
         """ Read the file containing the directories of the Non Regression
@@ -311,8 +349,8 @@ class NonReg:
             #TODO: Create a table with the max relative diff only for the f2 table 
 
             #Plot graph comparing the variable of the 2 files:
-            P = PlotCsv(list_f,list_df,f2,self.dout)
-            P.plot_2_array()
+            P = PlotCsv(list_f,list_df,f2,self.dout,self.PlotFormat)
+            P.plot_list_of_col()
 
         #remove tmp directory contains temporary csv files:
         if(self.format):

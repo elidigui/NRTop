@@ -125,11 +125,13 @@ class TestPlotCsv(ut.TestCase):
         self.b=NRT.CompDataFrames(self.list_df)
         c2=self.b.diff_pd_2(0.01)
         self.f=self.b.col_diff(c2)
+        
+        self.frmt1="matplotlib"
 
     def test_Plot_2_array(self):
         """ Test if plot file are the same as before"""
-        P=NRT.PlotCsv(self.list_f,self.list_df,self.f,self.dest1)
-        P.plot_2_array()
+        P=NRT.PlotCsv(self.list_f,self.list_df,self.f,self.dest1,self.frmt1)
+        P.plot_list_of_col()
         res="Cour_H_Beam1X-East.png"
         if pf.system()=="Windows":
             if (pf.version()=="6.1.7601"):
