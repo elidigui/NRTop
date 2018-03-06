@@ -36,22 +36,6 @@ class ReadCsv:
         # field separator:
         self.sep = sep
 
-    def find_line(self,fi,reg):
-        """ Return the number of the line of file fi that first match the 
-        regexp reg
-        """
-        id = reg
-        regexp=re.compile(id)
-        j = 1
-        with open(fi) as f:
-            for i,line in enumerate(f):
-                if (regexp.search(line)==None):
-                    pass
-                else:
-                    j = j+i
-                    break
-        return(j)
-
     def Csvfile_2_Array(self):
         """ Turn the file into an array """
         a = pd.read_csv(self.fn, sep=self.sep, encoding = "utf8", header=self.Nh)
@@ -370,6 +354,22 @@ class ConvToCsv():
     """Tool for converting file f to simple csv format"""
     def __init__(self):
         pass
+
+    def find_line(self,fi,reg):
+        """ Return the number of the line of file fi that first match the 
+        regexp reg
+        """
+        id = reg
+        regexp=re.compile(id)
+        j = 1
+        with open(fi) as f:
+            for i,line in enumerate(f):
+                if (regexp.search(line)==None):
+                    pass
+                else:
+                    j = j+i
+                    break
+        return(j)
 
     def plt_to_csv(self,f):
         """Convert a Tecplot 2D datafile into a basic 1 header csv file into a

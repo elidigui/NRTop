@@ -57,12 +57,7 @@ class TestReadDes(ut.TestCase):
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
 
-    def test_find_line(self):
-        """ Test if it find the good line in test2.des"""
-        a = NRT.ReadCsv(self.test2,0,"\s+")
-        s=  a.find_line(self.test2,"Empty_Category20")
-        self.assertEqual(s, 38, "Dont find the write line")
-
+   
     def tearDown(self):
         """ Reset test """
         pass
@@ -358,8 +353,6 @@ class TestNonReg(ut.TestCase):
         Test=cmp(f1,f1_ok)
         self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
 
-
-
     def tearDown(self):
         """ Reset test """
         #os.remove(self.o)
@@ -387,6 +380,12 @@ class TestConToCsv(ut.TestCase):
         self.test1 = self.rep_test +os.sep+"test1"+os.sep+"test1.txt"
         self.test2 = self.rep_test +os.sep+"test2"+os.sep+"test2.des"
  
+    def test_find_line(self):
+        """ Test if it find the good line in test2.des"""
+        a = NRT.ConvToCsv()
+        s=  a.find_line(self.test2,"Empty_Category20")
+        self.assertEqual(s, 38, "Dont find the write line")
+    
     def testPltToCsv_1(self):
         """ Test if the plt file converted is the same as before"""
         lf=self.f.plt_to_csv(self.f1_in)
