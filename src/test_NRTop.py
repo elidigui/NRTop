@@ -25,35 +25,35 @@ class TestReadDes(ut.TestCase):
         self.f1    = self.rep_test +os.sep+"test3"+os.sep+"TA3.csv"
         self.f2    = self.rep_test +os.sep+"test4"+os.sep+"TA3.csv"
 
-    def test_header_Desfile_2_Array(self):
+    def test_header_Csvfile_2_Array(self):
         """ Test if the function read the header of a .des file """
         a = NRT.ReadCsv(self.test2,48,"\s+")
-        a_t = a.Desfile_2_Array()
+        a_t = a.Csvfile_2_Array()
         self.assertEqual(a_t.keys()[1], "ALIM_EIM",
                          "Don't read the write header")
 
-    def test_value_Desfile_2_Array_1(self):
+    def test_value_Csvfile_2_Array_1(self):
         """ Test if the function reada value of a .des file """
         a = NRT.ReadCsv(self.test2, 48,"\s+")
-        a_t = a.Desfile_2_Array()
+        a_t = a.Csvfile_2_Array()
         self.assertEqual(a_t["ALIM_EIM"][0].round(decimals=6), 2.0999E-002,
                          "Dont read the right value")
 
-    def test_value_Desfile_2_Array_2(self):
+    def test_value_Csvfile_2_Array_2(self):
         """ Test if the function read a key of a .csv file """
-        df1=NRT.ReadCsv(self.f1,8,";").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,";").Csvfile_2_Array()
         self.assertEqual(df1.keys()[2], "Cour_H Beam3Z-UP",
                          "Dont read the right key")
 
-    def test_value_Desfile_2_Array_3(self):
+    def test_value_Csvfile_2_Array_3(self):
         """ Test if the function reada value of a .csv file """
-        df1=NRT.ReadCsv(self.f1,8,";").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,";").Csvfile_2_Array()
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
 
-    def test_value_Desfile_2_Array_4(self):
+    def test_value_Csvfile_2_Array_4(self):
         """ Test if the function reada value of a .csv file """
-        df1=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f2,8,",").Csvfile_2_Array()
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
 
@@ -74,8 +74,8 @@ class TestCompDataFrames(ut.TestCase):
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestCompDataFrames"
         self.f1 = self.rep_test +os.sep+"Dat"+os.sep+"TA3.csv"
         self.f2 = self.rep_test +os.sep+"Dat_ref"+os.sep+"TA3.csv"
-        df1=NRT.ReadCsv(self.f1,8,",").Desfile_2_Array()
-        df2=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,",").Csvfile_2_Array()
+        df2=NRT.ReadCsv(self.f2,8,",").Csvfile_2_Array()
         self.list_df=[df1,df2]
         self.b=NRT.CompDataFrames(self.list_df)
         self.c3=self.b.diff_pd_2(0.01)
@@ -113,8 +113,8 @@ class TestPlotCsv(ut.TestCase):
         self.f2 = self.rep_test+os.sep+"Dat_ref"+os.sep+"TA3.csv"
         self.list_f=[self.f1,self.f2]
 
-        df1=NRT.ReadCsv(self.f1,8,",").Desfile_2_Array()
-        df2=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,",").Csvfile_2_Array()
+        df2=NRT.ReadCsv(self.f2,8,",").Csvfile_2_Array()
         self.list_df=[df1,df2]
 
         self.dest1=self.rep_test
@@ -383,7 +383,10 @@ class TestConToCsv(ut.TestCase):
 
         self.f=NRT.ConvToCsv()
 
-
+        self.rep_test = ".."+os.sep+"cas"+os.sep+"TestReadDes"
+        self.test1 = self.rep_test +os.sep+"test1"+os.sep+"test1.txt"
+        self.test2 = self.rep_test +os.sep+"test2"+os.sep+"test2.des"
+ 
     def testPltToCsv_1(self):
         """ Test if the plt file converted is the same as before"""
         lf=self.f.plt_to_csv(self.f1_in)
@@ -478,8 +481,8 @@ class TestArgument(ut.TestCase):
 
         #def suite():
 #    suite = ut.TestSuite()
-#    suite.addTest(TestReadDes('test_header_Desfile_2_Array'))
-#    suite.addTest(TestReadDes('test_value_Desfile_2_Array'))
+#    suite.addTest(TestReadDes('test_header_Csvfile_2_Array'))
+#    suite.addTest(TestReadDes('test_value_Csvfile_2_Array'))
 #    return suite
 
 #List of TestSuites:

@@ -52,7 +52,7 @@ class ReadCsv:
                     break
         return(j)
 
-    def Desfile_2_Array(self):
+    def Csvfile_2_Array(self):
         """ Turn the file into an array """
         a = pd.read_csv(self.fn, sep=self.sep, encoding = "utf8", header=self.Nh)
         if os.path.basename(self.fn)[-4:]==".des":
@@ -104,8 +104,8 @@ class CompDataFrames:
                 return (pd.DataFrame({'abs':abscisse,'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
                                     index=changed.index))
         else:
-            z = pd.DataFrame.dropna()
-            return(z)
+            zz = pd.DataFrame.dropna()
+            return(zz)
 
     def col_diff(self,c2):
         """" c2 is the DataFrame that result of diff_pd_2(self,err)
@@ -317,13 +317,20 @@ class NonReg:
         the relative difference is greater than a treshold"""
 
         #Patern that match tecplot whatever is its case
-        pattern = re.compile( r'tecplot', re.I)
+        pat_TEC = re.compile( r'tecplot', re.I)
+        i_TEC=0
+        pat_DES = re.compile( r'des', re.I)
+        i_DES=0
         if(self.format):
-            if pattern.match(self.format):
+            if pat_TEC.match(self.format):
                 list_f = SavePltToCsv(list_f)
+                i_TEC=1
+            elif pat_DES.match(self.format):
+                list_f = SaveDesToCsv(list_f)
+                i_DES=1
 
-        df1 = ReadCsv(list_f[0],self.Nh,self.sep).Desfile_2_Array()
-        df2 = ReadCsv(list_f[1],self.Nh,self.sep).Desfile_2_Array()
+        df1 = ReadCsv(list_f[0],self.Nh,self.sep).Csvfile_2_Array()
+        df2 = ReadCsv(list_f[1],self.Nh,self.sep).Csvfile_2_Array()
         list_df = [df1,df2]
 
         #Create 2 DataFrames from the 2 files to compare:
@@ -354,7 +361,7 @@ class NonReg:
 
         #remove tmp directory contains temporary csv files:
         if(self.format):
-            if pattern.match(self.format):
+            if i_TEC ==1 or i_DES ==1 :
                 c = ConvToCsv()
                 c.CleanTmp(self0.clean,list_f)
 
@@ -396,6 +403,27 @@ class ConvToCsv():
                         lfout.append(line)
         return(lfout)
 
+    def des_to_csv(self,f):
+        """Convert a .des file (ModeFrontier result file)  into a basic 1 header csv file into a
+        list object"""
+        #Keyword of the beginig of real data.s:
+        re_param = re.compile(r'<ID>   <RID>')
+        
+        a = NRT.ReadCsv(f,0,"\s+")
+        s=  a.find_line(self.test2,'<ID>   <RID>')
+        lfout = []
+        with open (f, 'r') as fopen:
+            for line in fopen.readlines():
+                while not re_param.match(line):
+                    pass
+                else:
+                    #Remove space at the beginning and the end of the line:
+                    line = line.strip()
+                    # Remove multiple spaces:
+                    line = re.sub(' +',';',line)
+                    lfout.append(line)
+        return(lfout)
+
     def SavePltToCsv(self,list_f):
         """Convert the 2 plt files in list_f into csv file and save it
             in a tmp dir by the plt file"""
@@ -404,6 +432,24 @@ class ConvToCsv():
             f = ConvToCsv()
             #list containing the data tecplot input file converted in csv.
             lf = f.plt_to_csv(fi)
+            #Name of the dir where csv file is going to be saved:
+            rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
+            #Create Dir if it doesn't exists:
+            mkrep(rep_tmp)
+            fo_name = os.path.basename(fi)[:-4]+".csv"
+            fo = rep_tmp+os.sep+fo_name
+            f.WriteToFile(lf,fo)
+            l_tmp.append(fo)
+        return(l_tmp)
+
+    def SaveDesToCsv(self,list_f):
+        """Convert the 2 .des files in list_f into csv file and save it
+            in a tmp dir by the plt file"""
+        l_tmp = []
+        for i,fi in enumerate(list_f):
+            f = ConvToCsv()
+            #list containing the data tecplot input file converted in csv.
+            lf = f.des_to_csv(fi)
             #Name of the dir where csv file is going to be saved:
             rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
             #Create Dir if it doesn't exists:

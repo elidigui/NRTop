@@ -13,11 +13,11 @@ difference is higher  than a threshold.
 0003-A function to create the compfile
 0004-Put all arguments in the config file
 0005-Put PlotFormat in config file
-
 1000-For portability, understand why plots change with the computer.
 
 
 2000-ToCSV converter
+2OO5-extend self.z to more format than tecplot
 2001-DWToCSV
 2002-PRESSUToCsV
 2003-GPToCSV
