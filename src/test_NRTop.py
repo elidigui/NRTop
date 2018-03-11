@@ -229,7 +229,7 @@ class TestNonReg(ut.TestCase):
         #Instantiate a NonReg object with arguments in self:
         self.NR=NRT.NonReg(self)
         #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
-        self.NR.RunNonRegFile(lf)
+        self.NR.RunNonRegFile(lf)   
 
         f1=self.o+os.sep+res1
         f1_ok=o_ok+os.sep+res1
@@ -303,6 +303,7 @@ class TestNonReg(ut.TestCase):
         self.assertEqual(D3,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat"    ,"Not the good config Proj2's 1st Path")
         self.assertEqual(D4,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat_ref","Not the good config Proj2's 2nd Path")
 
+
     def test_RunNonRegProject_1(self):
         """Test if a project is achived well"""
         #Config file's path:
@@ -374,6 +375,11 @@ class TestConToCsv(ut.TestCase):
         self.f2_out=self.rep_test+os.sep+"testSavePltToCsv"+os.sep+"tmp"+os.sep+"testPltToCsv_1.csv"
         self.list_f2=[self.f2_in,self.f2_in]
 
+        self.f3_in =self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2.des"
+        self.f3_ref=self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2_ref.csv"
+        self.f3_out=self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2.csv"
+        
+
         self.f=NRT.ConvToCsv()
 
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestReadDes"
@@ -388,19 +394,24 @@ class TestConToCsv(ut.TestCase):
     
     def testPltToCsv_1(self):
         """ Test if the plt file converted is the same as before"""
-        lf=self.f.plt_to_csv(self.f1_in)
-        self.f.WriteToFile(lf,self.f1_out)
+        self.f.plt_to_csv(self.f1_in,self.f1_out)
         self.assertTrue(cmp(self.f1_out,self.f1_ref,"File produced have changed"))
 
-    def testSavePltToCsv(self):
+    def testSaveToCsv(self):
         """Test if a csv file is created in a tmp directory and 
         if that file haven't changed"""
         pattern = re.compile( r'tecplot', re.I)
 
         if pattern.match(self.format):
-            lf=self.f.SavePltToCsv(self.list_f2)
+            lf=self.f.SaveToCsv(self.list_f2,self.format)
         self.assertTrue(cmp(lf[0],self.f2_out,"Csv file converted from plt are not the same"))
         self.assertTrue(cmp(lf[1],self.f2_out,"Csv file converted from plt are not the same"))
+
+    def test_des_to_csv(self):
+        """Test if a des file is correctly converted in csv file."""
+        print(self.f3_in)
+        self.f.des_to_csv(self.f3_in,self.f3_out)
+        self.assertTrue(cmp(self.f3_out,self.f3_ref,"File produced have changed"))
 
     def testCleanTmp_1(self):
         """Test if the tmp dir have been removed when c=1"""

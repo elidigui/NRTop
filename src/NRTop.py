@@ -301,53 +301,48 @@ class NonReg:
         the relative difference is greater than a treshold"""
 
         #Patern that match tecplot whatever is its case
-        pat_TEC = re.compile( r'tecplot', re.I)
-        i_TEC=0
-        pat_DES = re.compile( r'des', re.I)
-        i_DES=0
-        if(self.format):
-            if pat_TEC.match(self.format):
-                list_f = SavePltToCsv(list_f)
-                i_TEC=1
-            elif pat_DES.match(self.format):
-                list_f = SaveDesToCsv(list_f)
-                i_DES=1
-
-        df1 = ReadCsv(list_f[0],self.Nh,self.sep).Csvfile_2_Array()
-        df2 = ReadCsv(list_f[1],self.Nh,self.sep).Csvfile_2_Array()
-        list_df = [df1,df2]
-
-        #Create 2 DataFrames from the 2 files to compare:
-        b = CompDataFrames(list_df)
-
-        #Compute differences between 2 DataFrames:
-        c2 = b.diff_pd_2(self.err).sort_index(level="col")
-
-        f = os.path.basename(list_f[0])[:-4]
-        if c2.empty:
-            logging.info("No diff from %s"%f)
+        pat = re.compile( r'tecplot|des', re.I)
+        #pat_DES = re.compile( r'des', re.I)
+        if (pat.match(str(self.format))):
+            #| pat_DES.match(str(self.format)):
+            f=ConvToCsv()
+            list_f = f.SaveToCsv(list_f,self.format)
         else:
-            #Create the Comparation directory if it doesn't exist:
-            mkrep(self.dout)
-            #Export the result in a csv file:
-            fout = f+"_"+str(self.err)+".csv"
-            dest=self.dout+os.sep+fout
-            logging.debug("Diff file:%s"%dest)
-            b.Export_diff(c2,dest)
-            #Compute the list of column (variable) that differe:
-            f2 = b.col_diff(c2)
-
-            #TODO: Create a table with the max relative diff only for the f2 table 
-
-            #Plot graph comparing the variable of the 2 files:
-            P = PlotCsv(list_f,list_df,f2,self.dout,self.PlotFormat)
-            P.plot_list_of_col()
+                    
+            df1 = ReadCsv(list_f[0],self.Nh,self.sep).Csvfile_2_Array()
+            df2 = ReadCsv(list_f[1],self.Nh,self.sep).Csvfile_2_Array()
+            list_df = [df1,df2]
+    
+            #Create 2 DataFrames from the 2 files to compare:
+            b = CompDataFrames(list_df)
+    
+            #Compute differences between 2 DataFrames:
+            c2 = b.diff_pd_2(self.err).sort_index(level="col")
+    
+            f = os.path.basename(list_f[0])[:-4]
+            if c2.empty:
+                logging.info("No diff from %s"%f)
+            else:
+                #Create the Comparation directory if it doesn't exist:
+                mkrep(self.dout)
+                #Export the result in a csv file:
+                fout = f+"_"+str(self.err)+".csv"
+                dest=self.dout+os.sep+fout
+                logging.debug("Diff file:%s"%dest)
+                b.Export_diff(c2,dest)
+                #Compute the list of column (variable) that differe:
+                f2 = b.col_diff(c2)
+    
+                #TODO: Create a table with the max relative diff only for the f2 table 
+    
+                #Plot graph comparing the variable of the 2 files:
+                P = PlotCsv(list_f,list_df,f2,self.dout,self.PlotFormat)
+                P.plot_list_of_col()
 
         #remove tmp directory contains temporary csv files:
-        if(self.format):
-            if i_TEC ==1 or i_DES ==1 :
-                c = ConvToCsv()
-                c.CleanTmp(self0.clean,list_f)
+        if (pat.match(str(self.format))):
+            c = ConvToCsv()
+            c.CleanTmp(self.clean,list_f)
 
 
 class ConvToCsv():
@@ -371,7 +366,7 @@ class ConvToCsv():
                     break
         return(j)
 
-    def plt_to_csv(self,f):
+    def plt_to_csv(self,f,fo):
         """Convert a Tecplot 2D datafile into a basic 1 header csv file into a
         list object"""
         #List of keyword at the begining of lines to be removes:
@@ -401,20 +396,22 @@ class ConvToCsv():
                         # Remove multiple spaces:
                         line = re.sub(' +',';',line)
                         lfout.append(line)
-        return(lfout)
+        self.WriteToFile(lfout,fo)
 
-    def des_to_csv(self,f):
+    def des_to_csv(self,f,fo):
         """Convert a .des file (ModeFrontier result file)  into a basic 1 header csv file into a
         list object"""
         #Keyword of the beginig of real data.s:
         re_param = re.compile(r'<ID>   <RID>')
         
-        a = NRT.ReadCsv(f,0,"\s+")
-        s=  a.find_line(self.test2,'<ID>   <RID>')
+        nh=  self.find_line(f,'<ID>   <RID>')
+        print(nh,"f=",f)
         lfout = []
+        i=0
         with open (f, 'r') as fopen:
             for line in fopen.readlines():
-                while not re_param.match(line):
+                i+=1
+                if i < nh:
                     pass
                 else:
                     #Remove space at the beginning and the end of the line:
@@ -422,42 +419,32 @@ class ConvToCsv():
                     # Remove multiple spaces:
                     line = re.sub(' +',';',line)
                     lfout.append(line)
-        return(lfout)
+        self.WriteToFile(lfout,fo)
 
-    def SavePltToCsv(self,list_f):
+    def SaveToCsv(self,list_f,formt):
         """Convert the 2 plt files in list_f into csv file and save it
             in a tmp dir by the plt file"""
+        pat_TEC = re.compile( r'tecplot', re.I)
+        pat_DES = re.compile( r'des', re.I)
         l_tmp = []
         for i,fi in enumerate(list_f):
-            f = ConvToCsv()
-            #list containing the data tecplot input file converted in csv.
-            lf = f.plt_to_csv(fi)
             #Name of the dir where csv file is going to be saved:
             rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
-            #Create Dir if it doesn't exists:
-            mkrep(rep_tmp)
             fo_name = os.path.basename(fi)[:-4]+".csv"
             fo = rep_tmp+os.sep+fo_name
-            f.WriteToFile(lf,fo)
             l_tmp.append(fo)
-        return(l_tmp)
-
-    def SaveDesToCsv(self,list_f):
-        """Convert the 2 .des files in list_f into csv file and save it
-            in a tmp dir by the plt file"""
-        l_tmp = []
-        for i,fi in enumerate(list_f):
-            f = ConvToCsv()
+            
             #list containing the data tecplot input file converted in csv.
-            lf = f.des_to_csv(fi)
-            #Name of the dir where csv file is going to be saved:
-            rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
-            #Create Dir if it doesn't exists:
-            mkrep(rep_tmp)
-            fo_name = os.path.basename(fi)[:-4]+".csv"
-            fo = rep_tmp+os.sep+fo_name
-            f.WriteToFile(lf,fo)
-            l_tmp.append(fo)
+            if pat_TEC.match(formt):
+                # Create Dir if it doesn't exists:
+                mkrep(rep_tmp)
+                self.plt_to_csv(fi,fo)
+            elif pat_DES.match(formt):
+                # Create Dir if it doesn't exists:
+                mkrep(rep_tmp)
+                self.des_to_csv(fi,fo)
+            else:
+                logging.debug('format %s not modified'%formt)
         return(l_tmp)
 
     def WriteToFile(self,lf,f_out):
