@@ -354,6 +354,32 @@ class TestNonReg(ut.TestCase):
         Test=cmp(f1,f1_ok)
         self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
 
+#    def testCleanTmp_1(self):
+#        """Test if the tmp dir hav not been removed when z=0"""
+#        p1=self.repD1
+#        p2=self.repD1ref
+#
+#        f1=p1+os.sep+"TA3.csv"
+#        f2=p2+os.sep+"TA3.csv"
+#        lf=[f1,f2]
+#        logging.debug("Diff file:%s and %s"%(lf[0],lf[1]))
+#
+#        self.o = self.repD1+os.sep+"Comp" #Path to the comparison folder
+#        o_ok  = self.repD1+os.sep+"Comp_ok" #Path to the comparison folder
+#        res1="TA3_0.0001.csv"
+#
+#        #Instantiate a NonReg object with arguments in self:
+#        self.NR=NRT.NonReg(self)
+#        #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
+#        self.NR.RunNonRegFile(lf)   
+#
+#        tmp1 = p1+os.sep+os.sep+tmp
+#        ftmp1 = tmp1+os.sep+"TA3.csv"
+#        os.path.isdir(tmp1)
+#        self.assertTrue(os.path.isdir(tmp1),"tmp%s doesn't exist"%tmp1)
+#        self.assertTrue(os.path.isfile(ftmp1),"File %s doesn't exist"%ftmp1)
+#    
+    
     def tearDown(self):
         """ Reset test """
         #os.remove(self.o)
@@ -379,6 +405,12 @@ class TestConToCsv(ut.TestCase):
         self.f3_ref=self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2_ref.csv"
         self.f3_out=self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2.csv"
         
+        self.f4_in =self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2.des"
+        self.f4_ref=self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2_ref.csv"
+        self.f4_out=self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2.csv"
+        self.list_f4=[self.f4_in,self.f4_in]
+        self.Nh=53
+        
 
         self.f=NRT.ConvToCsv()
 
@@ -403,13 +435,18 @@ class TestConToCsv(ut.TestCase):
         pattern = re.compile( r'tecplot', re.I)
 
         if pattern.match(self.format):
-            lf=self.f.SaveToCsv(self.list_f2,self.format)
+            lf=self.f.SaveToCsv(self.list_f2,frmt=self.format,Nh=0)
         self.assertTrue(cmp(lf[0],self.f2_out,"Csv file converted from plt are not the same"))
         self.assertTrue(cmp(lf[1],self.f2_out,"Csv file converted from plt are not the same"))
 
+    def testSaveToCsv_2(self):
+        """Test if a csv file is created in a tmp directory when arg.Nh>0"""
+        lf=self.f.SaveToCsv(self.list_f4,Nh=self.Nh,frmt="")
+        self.assertTrue(cmp(lf[0],self.f4_out,"Csv file converted from plt are not the same"))
+        self.assertTrue(cmp(lf[1],self.f4_out,"Csv file converted from plt are not the same"))
+        
     def test_des_to_csv(self):
         """Test if a des file is correctly converted in csv file."""
-        print(self.f3_in)
         self.f.des_to_csv(self.f3_in,self.f3_out)
         self.assertTrue(cmp(self.f3_out,self.f3_ref,"File produced have changed"))
 

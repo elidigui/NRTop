@@ -306,11 +306,14 @@ class NonReg:
         if (pat.match(str(self.format))):
             #| pat_DES.match(str(self.format)):
             f=ConvToCsv()
-            list_f = f.SaveToCsv(list_f,self.format)
+            list_f = f.SaveToCsv(list_f,frmt=self.format,Nh=0)
+        elif self.Nh>0:
+            f=ConvToCsv()
+            list_f = f.SaveToCsv(list_f,frmt="",Nh=self.Nh)
         else:
                     
-            df1 = ReadCsv(list_f[0],self.Nh,self.sep).Csvfile_2_Array()
-            df2 = ReadCsv(list_f[1],self.Nh,self.sep).Csvfile_2_Array()
+            df1 = ReadCsv(list_f[0],self.sep).Csvfile_2_Array()
+            df2 = ReadCsv(list_f[1],self.sep).Csvfile_2_Array()
             list_df = [df1,df2]
     
             #Create 2 DataFrames from the 2 files to compare:
@@ -340,9 +343,12 @@ class NonReg:
                 P.plot_list_of_col()
 
         #remove tmp directory contains temporary csv files:
-        if (pat.match(str(self.format))):
+        if pat.match(str(self.format)):
             c = ConvToCsv()
             c.CleanTmp(self.clean,list_f)
+#        elif  self.Nh>0:
+#            c = ConvToCsv()
+#            c.CleanTmp(self.clean,list_f)
 
 
 class ConvToCsv():
@@ -401,17 +407,20 @@ class ConvToCsv():
     def des_to_csv(self,f,fo):
         """Convert a .des file (ModeFrontier result file)  into a basic 1 header csv file into a
         list object"""
-        #Keyword of the beginig of real data.s:
-        re_param = re.compile(r'<ID>   <RID>')
-        
+        # Find line with variables:
         nh=  self.find_line(f,'<ID>   <RID>')
-        print(nh,"f=",f)
+        self.Nh_to_csv(f,fo,nh)
+        
+    def Nh_to_csv(self,f,fo,Nh):
+        """Convert a .des file (ModeFrontier result file)  into a basic 1 header csv file into a
+        list object"""
         lfout = []
         i=0
-        with open (f, 'r') as fopen:
+        with open (f, 'r', encoding="latin1") as fopen:
+        #with open (f, 'r', encoding="utf8") as fopen:
             for line in fopen.readlines():
                 i+=1
-                if i < nh:
+                if i < Nh:
                     pass
                 else:
                     #Remove space at the beginning and the end of the line:
@@ -421,7 +430,7 @@ class ConvToCsv():
                     lfout.append(line)
         self.WriteToFile(lfout,fo)
 
-    def SaveToCsv(self,list_f,formt):
+    def SaveToCsv(self,list_f,**kwargs):
         """Convert the 2 plt files in list_f into csv file and save it
             in a tmp dir by the plt file"""
         pat_TEC = re.compile( r'tecplot', re.I)
@@ -435,16 +444,19 @@ class ConvToCsv():
             l_tmp.append(fo)
             
             #list containing the data tecplot input file converted in csv.
-            if pat_TEC.match(formt):
+            if pat_TEC.match(str(kwargs['frmt'])):
                 # Create Dir if it doesn't exists:
                 mkrep(rep_tmp)
                 self.plt_to_csv(fi,fo)
-            elif pat_DES.match(formt):
+            elif pat_DES.match(str(kwargs['frmt'])):
                 # Create Dir if it doesn't exists:
                 mkrep(rep_tmp)
                 self.des_to_csv(fi,fo)
+            elif kwargs['Nh']>0:
+                mkrep(rep_tmp)
+                self.Nh_to_csv(fi,fo,kwargs['Nh'])
             else:
-                logging.debug('format %s not modified'%formt)
+                logging.debug('format %s not modified'%kwargs['frmt'])
         return(l_tmp)
 
     def WriteToFile(self,lf,f_out):
@@ -509,9 +521,7 @@ class Argument():
         #logging.basicConfig(                                    format='%(levelname)s; %(asctime)s; %(message)s', level=numeric_level)
 
     def ArgsMain(self,args):
-         #Patern that match tecplot whatever is its case
-        pattern = re.compile( r'tecplot', re.I)
-
+        
         #create the comparison directory:
         try:
             os.mkdir(args.o)
@@ -546,8 +556,8 @@ class Argument():
                 list_d=args.g[0].split()
                 NR.RunNonRegDir(list_d)
             elif args.i:
-                R.ReadConfigFile(args.i)
-                R.RunNonRegProject()
+                NR.ReadConfigFile(args.i)
+                NR.RunNonRegProject()
 
 
 if __name__ == '__main__':
