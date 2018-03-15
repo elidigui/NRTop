@@ -36,23 +36,7 @@ class ReadCsv:
         # field separator:
         self.sep = sep
 
-    def find_line(self,fi,reg):
-        """ Return the number of the line of file fi that first match the 
-        regexp reg
-        """
-        id = reg
-        regexp=re.compile(id)
-        j = 1
-        with open(fi) as f:
-            for i,line in enumerate(f):
-                if (regexp.search(line)==None):
-                    pass
-                else:
-                    j = j+i
-                    break
-        return(j)
-
-    def Desfile_2_Array(self):
+    def Csvfile_2_Array(self):
         """ Turn the file into an array """
         a = pd.read_csv(self.fn, sep=self.sep, encoding = "utf8", header=self.Nh)
         if os.path.basename(self.fn)[-4:]==".des":
@@ -104,8 +88,8 @@ class CompDataFrames:
                 return (pd.DataFrame({'abs':abscisse,'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
                                     index=changed.index))
         else:
-            z = pd.DataFrame.dropna()
-            return(z)
+            zz = pd.DataFrame.dropna()
+            return(zz)
 
     def col_diff(self,c2):
         """" c2 is the DataFrame that result of diff_pd_2(self,err)
@@ -114,7 +98,7 @@ class CompDataFrames:
         #Reset the diff DataFrame so it does'nt have multiple index and 
         #select the relative error column:
         d2 = c2.reset_index().col
-        #Create the set of the column names so there is no doble elements:
+        #Create the set of the column names so there is no dobble elements:
         e2 = set(d2)
         #Create a list with that set
         f2 = sorted(e2)
@@ -127,7 +111,7 @@ class CompDataFrames:
 
 class PlotCsv:
     """ Plot panda DataFrames in a dir. gra in the dir. "dest"""
-    def __init__(self,list_f,list_df,lcol,dest):
+    def __init__(self,list_f,list_df,lcol,dest,PltFrmt):
         #Name of the files to compare:
         self.f1  = list_f[0]
         self.f2  = list_f[1]
@@ -136,6 +120,8 @@ class PlotCsv:
         self.df2  = list_df[1]
         #List of the column name to plot:
         self.lcol = lcol
+        #Plot Format:
+        self.PlotFormat=PltFrmt
         #Name of the common abscisse:
         self.t    = self.df1.keys()[0]
         self.title =  "1:%s vs\n 2:%s"%(self.f1,self.f2)
@@ -144,21 +130,54 @@ class PlotCsv:
         mkrep(self.dest)
         logging.debug("Dir. %s created"%self.dest)
 
-    def plot_2_array(self):
+    def plot_list_of_col(self):
+        """ Plot a list of 2 arrays with matplotlib """
         for col in self.lcol:
-            plt.title(self.title,fontsize = 8)
-            plt.xlabel(self.t)
-            plt.ylabel(col)
-            plt.plot(self.df1[self.t],self.df1[col],color = 'r',label = "1")
-            plt.plot(self.df2[self.t],self.df2[col],color = 'b',label = "2")
-            plt.legend(loc = 0)
-            #plt.grid(color = 'tab:gray', linestyle = '--', linewidth = 0.5)
-            plt.grid(color = 'gray', linestyle = '--', linewidth = 0.5)
-            nom_fig = self.dest+os.sep+col.replace(" ","_")+".png"
-            logging.debug("File %s created"%nom_fig)
-            plt.savefig(nom_fig,format = "png")
-            plt.close()
+            if self.PlotFormat == "matplotlib":
+                self.plot_mtpltlib(col)
+            elif self.PlotFormat == "gnuplot":
+                self.plot_gnuplot(col)
 
+    def plot_mtpltlib(self,col):
+        """ Plot 2 arrays with matplotlib """
+        plt.title(self.title,fontsize = 8)
+        plt.xlabel(self.t)
+        plt.ylabel(col)
+        plt.plot(self.df1[self.t],self.df1[col],color = 'r',label = "1")
+        plt.plot(self.df2[self.t],self.df2[col],color = 'b',label = "2")
+        plt.legend(loc = 0)
+        plt.grid(color = 'tab:gray', linestyle = '--', linewidth = 0.5)
+        nom_fig = self.dest+os.sep+col.replace(" ","_")+".png"
+        logging.debug("File %s created"%nom_fig)
+        plt.savefig(nom_fig,format = "png")
+        plt.close()
+
+    def plot_gnuplot(self):
+        """ Plot 2 arrays with gnuplot
+            Use a template, adapte it, use it to save a png plot 
+            and save it or not """
+        gtmp=load_template("gnuplot")    
+        gtmp.replace("__title__",self.title)
+        gtmp.replace("__x__",self.t)
+        gtmp.replace("__y__",col)
+        gtmp.replace("path1",self.f1)
+        gtmp.replace("path2",self.f2)
+        nom_fig = self.dest+os.sep+col.replace(" ","_")
+        nfig_bitmap=nom_fig+".png"
+        nfig_gnuplot=nom_fig+".gp"
+        gtmp.replace("__nomfig__",nfig_bitmap)
+        self.save_template(gtmp,nfig_gnuplot)
+        self.exec_template("gnuplot",nfig_gnuplot)
+
+
+    def load_template(self):
+        pass
+
+    def save_template(self,tmp,f):
+        pass
+
+    def exec_template(self,app,f):
+        pass
 
 class CompRep:
     """ Compare csv files that have the same name in two directories """
@@ -221,6 +240,8 @@ class NonReg:
         self.format = args.c
         # Cleanup:
         self.clean = args.z
+        # PlotFormat:
+        self.PlotFormat = "matplotlib"
 
     def ReadConfigFile(self,inputfile):
         """ Read the file containing the directories of the Non Regression
@@ -280,46 +301,54 @@ class NonReg:
         the relative difference is greater than a treshold"""
 
         #Patern that match tecplot whatever is its case
-        pattern = re.compile( r'tecplot', re.I)
-        if(self.format):
-            if pattern.match(self.format):
-                list_f = SavePltToCsv(list_f)
-
-        df1 = ReadCsv(list_f[0],self.Nh,self.sep).Desfile_2_Array()
-        df2 = ReadCsv(list_f[1],self.Nh,self.sep).Desfile_2_Array()
-        list_df = [df1,df2]
-
-        #Create 2 DataFrames from the 2 files to compare:
-        b = CompDataFrames(list_df)
-
-        #Compute differences between 2 DataFrames:
-        c2 = b.diff_pd_2(self.err).sort_index(level="col")
-
-        f = os.path.basename(list_f[0])[:-4]
-        if c2.empty:
-            logging.info("No diff from %s"%f)
+        pat = re.compile( r'tecplot|des', re.I)
+        #pat_DES = re.compile( r'des', re.I)
+        if (pat.match(str(self.format))):
+            #| pat_DES.match(str(self.format)):
+            f=ConvToCsv()
+            list_f = f.SaveToCsv(list_f,frmt=self.format,Nh=0)
+        elif self.Nh>0:
+            f=ConvToCsv()
+            list_f = f.SaveToCsv(list_f,frmt="",Nh=self.Nh)
         else:
-            #Create the Comparation directory if it doesn't exist:
-            mkrep(self.dout)
-            #Export the result in a csv file:
-            fout = f+"_"+str(self.err)+".csv"
-            dest=self.dout+os.sep+fout
-            logging.debug("Diff file:%s"%dest)
-            b.Export_diff(c2,dest)
-            #Compute the list of column (variable) that differe:
-            f2 = b.col_diff(c2)
-
-            #TODO: Create a table with the max relative diff only for the f2 table 
-
-            #Plot graph comparing the variable of the 2 files:
-            P = PlotCsv(list_f,list_df,f2,self.dout)
-            P.plot_2_array()
+                    
+            df1 = ReadCsv(list_f[0],self.sep).Csvfile_2_Array()
+            df2 = ReadCsv(list_f[1],self.sep).Csvfile_2_Array()
+            list_df = [df1,df2]
+    
+            #Create 2 DataFrames from the 2 files to compare:
+            b = CompDataFrames(list_df)
+    
+            #Compute differences between 2 DataFrames:
+            c2 = b.diff_pd_2(self.err).sort_index(level="col")
+    
+            f = os.path.basename(list_f[0])[:-4]
+            if c2.empty:
+                logging.info("No diff from %s"%f)
+            else:
+                #Create the Comparation directory if it doesn't exist:
+                mkrep(self.dout)
+                #Export the result in a csv file:
+                fout = f+"_"+str(self.err)+".csv"
+                dest=self.dout+os.sep+fout
+                logging.debug("Diff file:%s"%dest)
+                b.Export_diff(c2,dest)
+                #Compute the list of column (variable) that differe:
+                f2 = b.col_diff(c2)
+    
+                #TODO: Create a table with the max relative diff only for the f2 table 
+    
+                #Plot graph comparing the variable of the 2 files:
+                P = PlotCsv(list_f,list_df,f2,self.dout,self.PlotFormat)
+                P.plot_list_of_col()
 
         #remove tmp directory contains temporary csv files:
-        if(self.format):
-            if pattern.match(self.format):
-                c = ConvToCsv()
-                c.CleanTmp(self0.clean,list_f)
+        if pat.match(str(self.format)):
+            c = ConvToCsv()
+            c.CleanTmp(self.clean,list_f)
+#        elif  self.Nh>0:
+#            c = ConvToCsv()
+#            c.CleanTmp(self.clean,list_f)
 
 
 class ConvToCsv():
@@ -327,7 +356,23 @@ class ConvToCsv():
     def __init__(self):
         pass
 
-    def plt_to_csv(self,f):
+    def find_line(self,fi,reg):
+        """ Return the number of the line of file fi that first match the 
+        regexp reg
+        """
+        id = reg
+        regexp=re.compile(id)
+        j = 1
+        with open(fi) as f:
+            for i,line in enumerate(f):
+                if (regexp.search(line)==None):
+                    pass
+                else:
+                    j = j+i
+                    break
+        return(j)
+
+    def plt_to_csv(self,f,fo):
         """Convert a Tecplot 2D datafile into a basic 1 header csv file into a
         list object"""
         #List of keyword at the begining of lines to be removes:
@@ -357,24 +402,61 @@ class ConvToCsv():
                         # Remove multiple spaces:
                         line = re.sub(' +',';',line)
                         lfout.append(line)
-        return(lfout)
+        self.WriteToFile(lfout,fo)
 
-    def SavePltToCsv(self,list_f):
+    def des_to_csv(self,f,fo):
+        """Convert a .des file (ModeFrontier result file)  into a basic 1 header csv file into a
+        list object"""
+        # Find line with variables:
+        nh=  self.find_line(f,'<ID>   <RID>')
+        self.Nh_to_csv(f,fo,nh)
+        
+    def Nh_to_csv(self,f,fo,Nh):
+        """Convert a .des file (ModeFrontier result file)  into a basic 1 header csv file into a
+        list object"""
+        lfout = []
+        i=0
+        with open (f, 'r', encoding="latin1") as fopen:
+        #with open (f, 'r', encoding="utf8") as fopen:
+            for line in fopen.readlines():
+                i+=1
+                if i < Nh:
+                    pass
+                else:
+                    #Remove space at the beginning and the end of the line:
+                    line = line.strip()
+                    # Remove multiple spaces:
+                    line = re.sub(' +',';',line)
+                    lfout.append(line)
+        self.WriteToFile(lfout,fo)
+
+    def SaveToCsv(self,list_f,**kwargs):
         """Convert the 2 plt files in list_f into csv file and save it
             in a tmp dir by the plt file"""
+        pat_TEC = re.compile( r'tecplot', re.I)
+        pat_DES = re.compile( r'des', re.I)
         l_tmp = []
         for i,fi in enumerate(list_f):
-            f = ConvToCsv()
-            #list containing the data tecplot input file converted in csv.
-            lf = f.plt_to_csv(fi)
             #Name of the dir where csv file is going to be saved:
             rep_tmp = os.path.dirname(fi)+os.sep+"tmp"
-            #Create Dir if it doesn't exists:
-            mkrep(rep_tmp)
             fo_name = os.path.basename(fi)[:-4]+".csv"
             fo = rep_tmp+os.sep+fo_name
-            f.WriteToFile(lf,fo)
             l_tmp.append(fo)
+            
+            #list containing the data tecplot input file converted in csv.
+            if pat_TEC.match(str(kwargs['frmt'])):
+                # Create Dir if it doesn't exists:
+                mkrep(rep_tmp)
+                self.plt_to_csv(fi,fo)
+            elif pat_DES.match(str(kwargs['frmt'])):
+                # Create Dir if it doesn't exists:
+                mkrep(rep_tmp)
+                self.des_to_csv(fi,fo)
+            elif kwargs['Nh']>0:
+                mkrep(rep_tmp)
+                self.Nh_to_csv(fi,fo,kwargs['Nh'])
+            else:
+                logging.debug('format %s not modified'%kwargs['frmt'])
         return(l_tmp)
 
     def WriteToFile(self,lf,f_out):
@@ -439,9 +521,7 @@ class Argument():
         #logging.basicConfig(                                    format='%(levelname)s; %(asctime)s; %(message)s', level=numeric_level)
 
     def ArgsMain(self,args):
-         #Patern that match tecplot whatever is its case
-        pattern = re.compile( r'tecplot', re.I)
-
+        
         #create the comparison directory:
         try:
             os.mkdir(args.o)

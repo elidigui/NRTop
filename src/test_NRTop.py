@@ -25,44 +25,39 @@ class TestReadDes(ut.TestCase):
         self.f1    = self.rep_test +os.sep+"test3"+os.sep+"TA3.csv"
         self.f2    = self.rep_test +os.sep+"test4"+os.sep+"TA3.csv"
 
-    def test_header_Desfile_2_Array(self):
+    def test_header_Csvfile_2_Array(self):
         """ Test if the function read the header of a .des file """
         a = NRT.ReadCsv(self.test2,48,"\s+")
-        a_t = a.Desfile_2_Array()
+        a_t = a.Csvfile_2_Array()
         self.assertEqual(a_t.keys()[1], "ALIM_EIM",
                          "Don't read the write header")
 
-    def test_value_Desfile_2_Array_1(self):
+    def test_value_Csvfile_2_Array_1(self):
         """ Test if the function reada value of a .des file """
         a = NRT.ReadCsv(self.test2, 48,"\s+")
-        a_t = a.Desfile_2_Array()
+        a_t = a.Csvfile_2_Array()
         self.assertEqual(a_t["ALIM_EIM"][0].round(decimals=6), 2.0999E-002,
                          "Dont read the right value")
 
-    def test_value_Desfile_2_Array_2(self):
+    def test_value_Csvfile_2_Array_2(self):
         """ Test if the function read a key of a .csv file """
-        df1=NRT.ReadCsv(self.f1,8,";").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,";").Csvfile_2_Array()
         self.assertEqual(df1.keys()[2], "Cour_H Beam3Z-UP",
                          "Dont read the right key")
 
-    def test_value_Desfile_2_Array_3(self):
+    def test_value_Csvfile_2_Array_3(self):
         """ Test if the function reada value of a .csv file """
-        df1=NRT.ReadCsv(self.f1,8,";").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,";").Csvfile_2_Array()
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
 
-    def test_value_Desfile_2_Array_4(self):
+    def test_value_Csvfile_2_Array_4(self):
         """ Test if the function reada value of a .csv file """
-        df1=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f2,8,",").Csvfile_2_Array()
         self.assertEqual(df1["Cour_H Beam3Z-UP"][0].round(decimals=9), 0.517860133,
                          "Dont read the right value")
 
-    def test_find_line(self):
-        """ Test if it find the good line in test2.des"""
-        a = NRT.ReadCsv(self.test2,0,"\s+")
-        s=  a.find_line(self.test2,"Empty_Category20")
-        self.assertEqual(s, 38, "Dont find the write line")
-
+   
     def tearDown(self):
         """ Reset test """
         pass
@@ -74,8 +69,8 @@ class TestCompDataFrames(ut.TestCase):
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestCompDataFrames"
         self.f1 = self.rep_test +os.sep+"Dat"+os.sep+"TA3.csv"
         self.f2 = self.rep_test +os.sep+"Dat_ref"+os.sep+"TA3.csv"
-        df1=NRT.ReadCsv(self.f1,8,",").Desfile_2_Array()
-        df2=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,",").Csvfile_2_Array()
+        df2=NRT.ReadCsv(self.f2,8,",").Csvfile_2_Array()
         self.list_df=[df1,df2]
         self.b=NRT.CompDataFrames(self.list_df)
         self.c3=self.b.diff_pd_2(0.01)
@@ -113,8 +108,8 @@ class TestPlotCsv(ut.TestCase):
         self.f2 = self.rep_test+os.sep+"Dat_ref"+os.sep+"TA3.csv"
         self.list_f=[self.f1,self.f2]
 
-        df1=NRT.ReadCsv(self.f1,8,",").Desfile_2_Array()
-        df2=NRT.ReadCsv(self.f2,8,",").Desfile_2_Array()
+        df1=NRT.ReadCsv(self.f1,8,",").Csvfile_2_Array()
+        df2=NRT.ReadCsv(self.f2,8,",").Csvfile_2_Array()
         self.list_df=[df1,df2]
 
         self.dest1=self.rep_test
@@ -125,11 +120,13 @@ class TestPlotCsv(ut.TestCase):
         self.b=NRT.CompDataFrames(self.list_df)
         c2=self.b.diff_pd_2(0.01)
         self.f=self.b.col_diff(c2)
+        
+        self.frmt1="matplotlib"
 
     def test_Plot_2_array(self):
         """ Test if plot file are the same as before"""
-        P=NRT.PlotCsv(self.list_f,self.list_df,self.f,self.dest1)
-        P.plot_2_array()
+        P=NRT.PlotCsv(self.list_f,self.list_df,self.f,self.dest1,self.frmt1)
+        P.plot_list_of_col()
         res="Cour_H_Beam1X-East.png"
         if pf.system()=="Windows":
             if (pf.version()=="6.1.7601"):
@@ -232,7 +229,7 @@ class TestNonReg(ut.TestCase):
         #Instantiate a NonReg object with arguments in self:
         self.NR=NRT.NonReg(self)
         #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
-        self.NR.RunNonRegFile(lf)
+        self.NR.RunNonRegFile(lf)   
 
         f1=self.o+os.sep+res1
         f1_ok=o_ok+os.sep+res1
@@ -307,6 +304,7 @@ class TestNonReg(ut.TestCase):
         self.assertEqual(os.path.normpath(D3),os.path.normpath(self.repP2+os.sep+"Dat")    ,"Not the good config Proj2's 1st Path")
         self.assertEqual(os.path.normpath(D4),os.path.normpath(self.repP2+os.sep+"Dat_ref"),"Not the good config Proj2's 2nd Path")
 
+
     def test_RunNonRegProject_1(self):
         """Test if a project is achived well"""
         #Config file's path:
@@ -357,8 +355,32 @@ class TestNonReg(ut.TestCase):
         Test=cmp(f1,f1_ok)
         self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
 
-
-
+#    def testCleanTmp_1(self):
+#        """Test if the tmp dir hav not been removed when z=0"""
+#        p1=self.repD1
+#        p2=self.repD1ref
+#
+#        f1=p1+os.sep+"TA3.csv"
+#        f2=p2+os.sep+"TA3.csv"
+#        lf=[f1,f2]
+#        logging.debug("Diff file:%s and %s"%(lf[0],lf[1]))
+#
+#        self.o = self.repD1+os.sep+"Comp" #Path to the comparison folder
+#        o_ok  = self.repD1+os.sep+"Comp_ok" #Path to the comparison folder
+#        res1="TA3_0.0001.csv"
+#
+#        #Instantiate a NonReg object with arguments in self:
+#        self.NR=NRT.NonReg(self)
+#        #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
+#        self.NR.RunNonRegFile(lf)   
+#
+#        tmp1 = p1+os.sep+os.sep+tmp
+#        ftmp1 = tmp1+os.sep+"TA3.csv"
+#        os.path.isdir(tmp1)
+#        self.assertTrue(os.path.isdir(tmp1),"tmp%s doesn't exist"%tmp1)
+#        self.assertTrue(os.path.isfile(ftmp1),"File %s doesn't exist"%ftmp1)
+#    
+    
     def tearDown(self):
         """ Reset test """
         #os.remove(self.o)
@@ -380,24 +402,54 @@ class TestConToCsv(ut.TestCase):
         self.f2_out=self.rep_test+os.sep+"testSavePltToCsv"+os.sep+"tmp"+os.sep+"testPltToCsv_1.csv"
         self.list_f2=[self.f2_in,self.f2_in]
 
+        self.f3_in =self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2.des"
+        self.f3_ref=self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2_ref.csv"
+        self.f3_out=self.rep_test+os.sep+"testDesToCsv"+os.sep+"test2.csv"
+        
+        self.f4_in =self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2.des"
+        self.f4_ref=self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2_ref.csv"
+        self.f4_out=self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2.csv"
+        self.list_f4=[self.f4_in,self.f4_in]
+        self.Nh=53
+        
+
         self.f=NRT.ConvToCsv()
 
-
+        self.rep_test = ".."+os.sep+"cas"+os.sep+"TestReadDes"
+        self.test1 = self.rep_test +os.sep+"test1"+os.sep+"test1.txt"
+        self.test2 = self.rep_test +os.sep+"test2"+os.sep+"test2.des"
+ 
+    def test_find_line(self):
+        """ Test if it find the good line in test2.des"""
+        a = NRT.ConvToCsv()
+        s=  a.find_line(self.test2,"Empty_Category20")
+        self.assertEqual(s, 38, "Dont find the write line")
+    
     def testPltToCsv_1(self):
         """ Test if the plt file converted is the same as before"""
-        lf=self.f.plt_to_csv(self.f1_in)
-        self.f.WriteToFile(lf,self.f1_out)
+        self.f.plt_to_csv(self.f1_in,self.f1_out)
         self.assertTrue(cmp(self.f1_out,self.f1_ref,"File produced have changed"))
 
-    def testSavePltToCsv(self):
+    def testSaveToCsv(self):
         """Test if a csv file is created in a tmp directory and 
         if that file haven't changed"""
         pattern = re.compile( r'tecplot', re.I)
 
         if pattern.match(self.format):
-            lf=self.f.SavePltToCsv(self.list_f2)
+            lf=self.f.SaveToCsv(self.list_f2,frmt=self.format,Nh=0)
         self.assertTrue(cmp(lf[0],self.f2_out,"Csv file converted from plt are not the same"))
         self.assertTrue(cmp(lf[1],self.f2_out,"Csv file converted from plt are not the same"))
+
+    def testSaveToCsv_2(self):
+        """Test if a csv file is created in a tmp directory when arg.Nh>0"""
+        lf=self.f.SaveToCsv(self.list_f4,Nh=self.Nh,frmt="")
+        self.assertTrue(cmp(lf[0],self.f4_out,"Csv file converted from plt are not the same"))
+        self.assertTrue(cmp(lf[1],self.f4_out,"Csv file converted from plt are not the same"))
+        
+    def test_des_to_csv(self):
+        """Test if a des file is correctly converted in csv file."""
+        self.f.des_to_csv(self.f3_in,self.f3_out)
+        self.assertTrue(cmp(self.f3_out,self.f3_ref,"File produced have changed"))
 
     def testCleanTmp_1(self):
         """Test if the tmp dir have been removed when c=1"""
@@ -476,8 +528,8 @@ class TestArgument(ut.TestCase):
 
         #def suite():
 #    suite = ut.TestSuite()
-#    suite.addTest(TestReadDes('test_header_Desfile_2_Array'))
-#    suite.addTest(TestReadDes('test_value_Desfile_2_Array'))
+#    suite.addTest(TestReadDes('test_header_Csvfile_2_Array'))
+#    suite.addTest(TestReadDes('test_value_Csvfile_2_Array'))
 #    return suite
 
 #List of TestSuites:
