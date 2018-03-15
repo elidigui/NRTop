@@ -301,10 +301,11 @@ class TestNonReg(ut.TestCase):
         D2=rep[0]['path']+os.sep+rep[0]['DirToComp'][1]
         D3=rep[1]['path']+os.sep+rep[1]['DirToComp'][0]
         D4=rep[1]['path']+os.sep+rep[1]['DirToComp'][1]
-        self.assertEqual(D1,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat"    ,"Not the good config Proj1's 1st Path")
-        self.assertEqual(D2,u"../cas/TestRegProject/test_Project_1/TestNonReg1/Dat_ref","Not the good config Proj1's 2nd Path")
-        self.assertEqual(D3,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat"    ,"Not the good config Proj2's 1st Path")
-        self.assertEqual(D4,u"../cas/TestRegProject/test_Project_1/TestNonReg2/Dat_ref","Not the good config Proj2's 2nd Path")
+        
+        self.assertEqual(os.path.normpath(D1),os.path.normpath(self.repP1+os.sep+"Dat")    ,"Not the good config Proj1's 1st Path")
+        self.assertEqual(os.path.normpath(D2),os.path.normpath(self.repP1+os.sep+"Dat_ref"),"Not the good config Proj1's 2nd Path")
+        self.assertEqual(os.path.normpath(D3),os.path.normpath(self.repP2+os.sep+"Dat")    ,"Not the good config Proj2's 1st Path")
+        self.assertEqual(os.path.normpath(D4),os.path.normpath(self.repP2+os.sep+"Dat_ref"),"Not the good config Proj2's 2nd Path")
 
     def test_RunNonRegProject_1(self):
         """Test if a project is achived well"""

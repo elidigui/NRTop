@@ -152,7 +152,8 @@ class PlotCsv:
             plt.plot(self.df1[self.t],self.df1[col],color = 'r',label = "1")
             plt.plot(self.df2[self.t],self.df2[col],color = 'b',label = "2")
             plt.legend(loc = 0)
-            plt.grid(color = 'tab:gray', linestyle = '--', linewidth = 0.5)
+            #plt.grid(color = 'tab:gray', linestyle = '--', linewidth = 0.5)
+            plt.grid(color = 'gray', linestyle = '--', linewidth = 0.5)
             nom_fig = self.dest+os.sep+col.replace(" ","_")+".png"
             logging.debug("File %s created"%nom_fig)
             plt.savefig(nom_fig,format = "png")
@@ -475,8 +476,8 @@ class Argument():
                 list_d=args.g[0].split()
                 NR.RunNonRegDir(list_d)
             elif args.i:
-                R.ReadConfigFile(args.i)
-                R.RunNonRegProject()
+                conf=NR.ReadConfigFile(args.i)
+                NR.RunNonRegProject(conf)
 
 
 if __name__ == '__main__':

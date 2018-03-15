@@ -1,1 +1,1 @@
-{"Project":[{"path":"../cas/TestRegProject/test_Project_1/TestNonReg1","DirToComp":["Dat","Dat_ref"]},{"path":"../cas/TestRegProject/test_Project_0/TestNonReg2","DirToComp":["Dat","Dat_ref"]}]}
+{"Project":[{"path":"../cas/TestNonReg/test_NonRegProject_1/TestNonReg1","DirToComp":["Dat","Dat_ref"]},{"path":"../cas/TestNonReg/test_NonRegProject_1/TestNonReg2","DirToComp":["Dat","Dat_ref"]}]}
