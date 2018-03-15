@@ -408,7 +408,7 @@ class TestConToCsv(ut.TestCase):
         
         self.f4_in =self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2.des"
         self.f4_ref=self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2_ref.csv"
-        self.f4_out=self.rep_test+os.sep+"testNhToCsv"+os.sep+"test2.csv"
+        self.f4_out=self.rep_test+os.sep+"testNhToCsv"+os.sep+"tmp"+os.sep+"test2.csv"
         self.list_f4=[self.f4_in,self.f4_in]
         self.Nh=53
         
