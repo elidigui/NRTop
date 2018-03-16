@@ -60,6 +60,17 @@ class CompDataFrames:
         """Identify differences between two pandas DataFrames
         Calculate the relative error between elements that are different
         Select those wich are greater than the error criteria err """
+        
+#        # Test if columns are the same:
+#        if (self.df1.columns != self.df2.columns).all():
+#            # Create the set of column names that are in common between 
+#            #self.df1 and self.df2
+#            si,sr=self.unic_col()
+#            for i in sr:
+#                logging.info("Columns %s not in both files:"%i)
+#            # Create two DF that have the same collumns """
+#            (df1,df2)=self.create_df_with_col_selected_from_set(self.sref)
+#        
         df1 = self.df1
         df2 = self.df2
         #For files that have the same column names:
@@ -75,6 +86,7 @@ class CompDataFrames:
                 #print(df1,df2)
                 #logging.debug('df1=%s; df2=%s'%(df1,df2))        
                 logging.debug('Finished')        
+                #diff_mask = (df1 != df2) & ((df1-df2)/df1 >err) #& ~(df1.isnull() & df2.isnull())
                 diff_mask = (df1 != df2) & ((df1-df2)/df1 >err) #& ~(df1.isnull() & df2.isnull())
                 ne_stacked = diff_mask.stack()
                 changed = ne_stacked[ne_stacked]
@@ -85,11 +97,38 @@ class CompDataFrames:
                 changed_from = df1.values[difference_locations]
                 changed_to = df2.values[difference_locations]
                 diff_rel = self.diff_rel_pd(changed_from,changed_to)
-                return (pd.DataFrame({'abs':abscisse,'from': changed_from, 'to': changed_to, 'diff_rel':diff_rel},
-                                    index=changed.index))
+                return (pd.DataFrame({'abs':abscisse,
+                                      'from': changed_from,
+                                      'to': changed_to,
+                                      'diff_rel':diff_rel},
+                                      index=changed.index))
         else:
             zz = pd.DataFrame.dropna()
             return(zz)
+    
+    def unic_col(self):
+        """ Return columns that are comon in the two DataFrame d1 and d2"""
+        l1=[]
+        for i in self.df1.columns:
+            l1.append(i)
+        s1=set(l1)
+        l2=[]
+        for i in self.df2.columns:
+            l2.append(i)
+        s2=set(l2)
+        s_intrsct=s1.intersection(s2)
+        s_rest=s2.union(s1)-s_intrsct
+        return(s_intrsct,s_rest)
+        
+    def create_df_with_col_selected_from_set(self,s):
+        """ Create two DF that have the same collumns """
+        df_1=pd.DataFrame()
+        for i in s:
+            df_1[i]=self.df1[i]
+        df_2=pd.DataFrame()
+        for i in s:
+            df_2[i]=self.df2[i]
+        return(df_1,df_2)
 
     def col_diff(self,c2):
         """" c2 is the DataFrame that result of diff_pd_2(self,err)

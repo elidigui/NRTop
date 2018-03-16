@@ -13,6 +13,7 @@ from filecmp import cmp
 import platform as pf
 import logging
 import NRTop as NRT
+import pandas as pd
 
 class TestReadDes(ut.TestCase):
     """ Test  ReadDes methods """
@@ -66,14 +67,49 @@ class TestCompDataFrames(ut.TestCase):
     """ Test the CompDataFrames Class """
     def setUp(self):
         """ Set test up """
-        self.rep_test = ".."+os.sep+"cas"+os.sep+"TestCompDataFrames"
-        self.f1 = self.rep_test +os.sep+"Dat"+os.sep+"TA3.csv"
-        self.f2 = self.rep_test +os.sep+"Dat_ref"+os.sep+"TA3.csv"
+        self.rep = ".."+os.sep+"cas"+os.sep+"TestCompDataFrames"
+        self.rep_test1=self.rep +os.sep+"test_CompDataFrames_123"
+        self.f1 = self.rep_test1 +os.sep+"Dat"+os.sep+"TA3.csv"
+        self.f2 = self.rep_test1 +os.sep+"Dat_ref"+os.sep+"TA3.csv"
         df1=NRT.ReadCsv(self.f1,8,",").Csvfile_2_Array()
         df2=NRT.ReadCsv(self.f2,8,",").Csvfile_2_Array()
         self.list_df=[df1,df2]
         self.b=NRT.CompDataFrames(self.list_df)
         self.c3=self.b.diff_pd_2(0.01)
+        
+        self.rep_test2=self.rep +os.sep+"test_CompDataFrames_col_etero"
+        self.si={ 'Cour_H Beam1X-East',
+                 'Cour_H Beam2Y-North',
+                 'Cour_H Beam3Z-UP',
+                 'Cour_H PP',
+                 'Cour_I Beam1X-East',
+                 'Cour_I Beam2Y-North',
+                 'Cour_I Beam3Z-UP',
+                 'Cour_I PP',
+                 'Cour_J Beam1X-East',
+                 'Cour_J Beam2Y-North',
+                 'Cour_J Beam3Z-UP',
+                 'Cour_J PP',
+                 'Cour_K Beam1X-East',
+                 'Cour_K Beam2Y-North',
+                 'Cour_K Beam3Z-UP',
+                 'Cour_K PP',
+                 'Temps (s)'}
+        self.sr={ 'Cour_J PP2' }
+        self.f2_1 = self.rep_test2 +os.sep+"Dat"+os.sep+"TA3.csv"
+        self.f2_2 = self.rep_test2 +os.sep+"Dat_ref"+os.sep+"TA3.csv"
+        
+        self.rep_test3=self.rep +os.sep+"test_create_df_with_col_selected_from_set"
+        self.f3_1 = self.rep_test3 +os.sep+"Dat"+os.sep+"TA3.csv"
+        self.f3_2 = self.rep_test3 +os.sep+"Dat_ref"+os.sep+"TA3.csv"
+        self.sref={ 'Cour_H Beam1X-East','Cour_H Beam2Y-North'}
+        self.c1=pd.DataFrame()
+        self.c2=pd.DataFrame()
+        self.c1['Cour_H Beam1X-East']=[-10.000000,-3.464046,-3.138074,-3.197010]
+        self.c1['Cour_H Beam2Y-North']=[0.189000,0.200000,0.330119,0.269000]
+        self.c2['Cour_H Beam1X-East']=[-3.206309,-3.464046,-3.138074,-3.197010]
+        self.c2['Cour_H Beam2Y-North']=[0.189000,0.200000,0.330119,0.269000]
+        
 
     def test_CompDataFrames_1(self):
         """ Test if the DataFrame of the difference of f1 and f2 are the good one"""
@@ -93,6 +129,42 @@ class TestCompDataFrames(ut.TestCase):
         f2=self.b.col_diff(self.c3)
         self.assertEqual(f2[0], "Cour_H Beam1X-East", "Dont read the right value")
 
+    def test_CompDataFrames_1(self):
+        """ Test if the DataFrame of the difference of f1 and f2 are the good one"""
+        c2=self.b.diff_pd_2(0.01)
+        c2_=c2["diff_rel"].values[0]
+        self.assertEqual(c2_.round(decimals=6), 0.679369,
+                         "Dont read the right value")
+    
+    def test_CompDataFrames_unic_col(self):
+        """ Test if the DataFrame of the difference of f1 and f2 are the good one"""
+        d1=NRT.ReadCsv(self.f2_1,8,",").Csvfile_2_Array()
+        d2=NRT.ReadCsv(self.f2_2,8,",").Csvfile_2_Array()
+        b=NRT.CompDataFrames([d1,d2])
+        (si,sr)=b.unic_col()
+        self.assertTrue(si==self.si,"UnicCol does'nt return right set")
+        self.assertTrue(sr==self.sr,"UnicCol does'nt return right set")
+    
+    def test_create_df_with_col_selected_from_set(self):
+        """ Test if a Df is createdfrom a DF with only the 
+        column specified in a set sref.
+        As the CompDataFrame is used, 2 DF have to be created..."""
+        d1=NRT.ReadCsv(self.f3_1,8,",").Csvfile_2_Array()
+        d2=NRT.ReadCsv(self.f3_2,8,",").Csvfile_2_Array()
+        b=NRT.CompDataFrames([d1,d2])
+        
+        (d_1,d_2)=b.create_df_with_col_selected_from_set(self.sref)
+        n1=self.c1.columns.shape[0]
+        n2=self.c2.columns.shape[0]
+        n_1=d_1.columns.shape[0]
+        n_2=d_2.columns.shape[0]
+        self.assertEqual(n1,n_1,"Number of col differ between c1 and d1")
+        self.assertEqual(n2,n_2,"Number of col differ between c1 and d1")
+        s1=set(d_1.columns)
+        s2=set(d_2.columns)
+        self.assertEqual(s1,self.sref,"Df1.col != self.sref")
+        self.assertEqual(s2,self.sref,"Df2.col != self.sref")
+        
     def tearDown(self):
         """ Reset test """
         pass
