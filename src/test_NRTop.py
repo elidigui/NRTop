@@ -109,7 +109,6 @@ class TestCompDataFrames(ut.TestCase):
         self.c2['Cour_H Beam1X-East']=[-3.206309,-3.464046,-3.138074,-3.197010]
         self.c2['Cour_H Beam2Y-North']=[0.189000,0.200000,0.330119,0.269000]
         
-
     def test_CompDataFrames_1(self):
         """ Test if the DataFrame of the difference of f1 and f2 are the good one"""
         c2=self.b.diff_pd_2(0.01)
@@ -257,7 +256,6 @@ class TestNonReg(ut.TestCase):
         self.repD1= self.repP1+os.sep+"Dat"
         self.repD1ref= self.repP1+os.sep+"Dat_ref"
 
-
         self.repNRF1= self.rep_tNR+os.sep+"test_NonRegFile_1"
         self.repDNRF1= self.repNRF1+os.sep+"Dat"
         self.repDNRF1ref= self.repNRF1+os.sep+"Dat_ref"
@@ -294,7 +292,6 @@ class TestNonReg(ut.TestCase):
         """ Test if RunNonReg produce the same results"""
         p1=self.repDNRF1
         p2=self.repDNRF1ref
-
         f1=p1+os.sep+"TA3.csv"
         f2=p2+os.sep+"TA3.csv"
         lf=[f1,f2]
@@ -623,8 +620,6 @@ class TestArgument(ut.TestCase):
         p2 = rep_test1+os.sep+"Dat_ref"
         f1 = p1+os.sep+"TA3.csv"
         f2 = p2+os.sep+"TA3.csv"
-        #Create a string like in the command line:
-        #lf=f1+" "+f2
 
         o    =rep_test1+os.sep+"Comp"
         o_ref=rep_test1+os.sep+"Comp_ref"
@@ -647,8 +642,6 @@ class TestArgument(ut.TestCase):
 
         p1=rep_test1+os.sep+"Dat"
         p2=rep_test1+os.sep+"Dat_ref"
-        #Create a string like in the command line:
-        #lp=p1+" "+p2
 
         o    =rep_test1+os.sep+"Comp"
         o_ref=rep_test1+os.sep+"Comp_ref"

@@ -67,7 +67,6 @@ class CompDataFrames:
         Calculate the relative error between elements that are different
         Select those wich are greater than the error criteria err """
         
-        
         # Test if columns are the same:
         if (self.df1.columns.shape[0] != self.df2.columns.shape[0]):
             # Create the set of column names that are in common between 
@@ -238,6 +237,7 @@ class PlotCsv:
     def exec_template(self,app,f):
         pass
 
+      
 class CompRep:
     """ Compare csv files that have the same name in two directories """
 
@@ -404,7 +404,6 @@ class NonReg:
 
         #Compute differences between 2 DataFrames:
         c2 = b.diff_pd_2(self.err).sort_index(level="col")
-        
         f = os.path.basename(list_f[0])[:-4]
         if c2.empty:
             logging.info("No diff from %s"%f)
@@ -650,7 +649,6 @@ class Argument():
         #logging.basicConfig(                                    format='%(levelname)s; %(asctime)s; %(message)s', level=numeric_level)
 
     def ArgsMain(self,args):
-              
         #create the comparison directory:
         try:
             os.mkdir(args.o)
@@ -692,7 +690,6 @@ class Argument():
             conf=NR.ReadConfigFile(args.t[1])
             NR.RunNonRegProject(conf)
 
-
 if __name__ == '__main__':
     #Lecture des arguments:
     a=Argument(sys.argv[1:])
@@ -702,7 +699,6 @@ if __name__ == '__main__':
     args=a.ArgsDef()
     a.SetLog(args)
     logging.info('Started')
-    
     a.ArgsMain(args)
 
     logging.info('Finished')        
