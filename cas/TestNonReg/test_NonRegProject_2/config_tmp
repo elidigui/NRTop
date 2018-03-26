@@ -1,0 +1,7 @@
+﻿{"Project":
+  [
+    {"path":"..\cas\TestNonReg\test_NonRegProject_2\cas01",
+     "DirToComp":["Dat","Dat_ref"],
+    }
+  ]
+}
