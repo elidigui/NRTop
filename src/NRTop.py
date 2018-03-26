@@ -163,12 +163,12 @@ class CompDataFrames:
 
     def Export_diff(self,d,dest):
         """ Export the result of diff_pd_2 in a csv file """
-        d.to_csv(dest)
+        d.to_csv(dest,encoding="utf8",sep=";")
 
 
 class PlotCsv:
     """ Plot panda DataFrames in a dir. gra in the dir. "dest"""
-    def __init__(self,list_f,list_df,lcol,dest,PltFrmt):
+    def __init__(self,list_f,list_df,lcol,dest,PltFrmt): 
         #Name of the files to compare:
         self.f1  = list_f[0]
         self.f2  = list_f[1]
@@ -411,7 +411,7 @@ class NonReg:
             #Create the Comparation directory if it doesn't exist:
             mkrep(self.dout)
             #Export the result in a csv file:
-            fout = f+"_"+str(self.err)+".csv"
+            fout = f+"_"+str(int(-np.log10(self.err)))+".csv"
             dest=self.dout+os.sep+fout
             logging.debug("Diff file:%s"%dest)
             b.Export_diff(c2,dest)

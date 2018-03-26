@@ -294,18 +294,24 @@ class TestNonReg(ut.TestCase):
         p2=self.repDNRF1ref
         f1=p1+os.sep+"TA3.csv"
         f2=p2+os.sep+"TA3.csv"
-        lf=[f1,f2]
-        logging.debug("Diff file:%s and %s"%(lf[0],lf[1]))
+        lf1=[f1,f2]
+        f1=p1+os.sep+"TA4.csv"
+        f2=p2+os.sep+"TA4.csv"
+        lf2=[f1,f2]
+        
+        logging.debug("Diff file:%s and %s"%(lf1[0],lf1[1]))
 
         self.o = self.repNRF1+os.sep+"Comp" #Path to the comparison folder
         o_ok  = self.repNRF1+os.sep+"Comp_ok" #Path to the comparison folder
-        res1="TA3_0.0001.csv"
+        res1="TA3_5.csv"
 
         #Instantiate a NonReg object with arguments in self:
         self.n=9
+        self.e=1e-5
         self.NR=NRT.NonReg(self)
         #Create TA3_1.csv in Comp and plot Cour_H Beam1X-East.png in Comp/gra
-        self.NR.RunNonRegFile(lf)   
+        self.NR.RunNonRegFile(lf1)  
+        self.NR.RunNonRegFile(lf2)
 
         f1=self.o+os.sep+res1
         f1_ok=o_ok+os.sep+res1
@@ -316,6 +322,13 @@ class TestNonReg(ut.TestCase):
         f1=self.o+os.sep+"gra"+os.sep+res1
         fexist=os.path.isfile(f1)
         self.assertTrue(fexist,"%s does not exist"%f1)
+        
+        res1="TA4_5.csv"
+        f1=self.o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
 #        if pf.system()=="Windows":
 #            if pf.version()=="6.1.7601":
 #                f1_ref=o_ok+os.sep+"gra_ref_windows_PCCHALOPIN"+os.sep+res1
@@ -346,7 +359,7 @@ class TestNonReg(ut.TestCase):
 
         self.o = self.repNRF2+os.sep+"Comp" #Path to the comparison folder
         o_ok  = self.repNRF2+os.sep+"Comp_ok" #Path to the comparison folder
-        res1="TA3_0.0001.csv"
+        res1="TA3_4.csv"
 
         #Instantiate a NonReg object with arguments in self:
         self.n=9
@@ -372,7 +385,7 @@ class TestNonReg(ut.TestCase):
         #Create TA3_0.0001.csv in self.o and plot Cour_H Beam1X-East.png in self.o/gra
         self.NR.RunNonRegDir(lp)
 
-        res1="TA3_0.0001.csv"
+        res1="TA3_4.csv"
         f1=self.o+os.sep+res1
         f1_ok=o_ok+os.sep+res1
         logging.debug("File %s and %s are compared:"%(f1,f1_ok))
@@ -407,64 +420,64 @@ class TestNonReg(ut.TestCase):
         self.assertEqual(os.path.normpath(D4),os.path.normpath(self.repP2+os.sep+"Dat_ref"),"Not the good config Proj2's 2nd Path")
 
 
-#    def test_RunNonRegProject_1(self):
-#        """Test if a project is achived well"""
-#        #Config file's path:
-#        fconf=self.repNR1+os.sep+self.ProjectConfig
-#        #Arguments:
-#        arg=["i",fconf,"-s",",","-l","debug","-n","9"]
-#        a=NRT.Argument(arg)
-#        #Create an args dictionnary with argparse:
-#        args=a.ArgsDef()
-#        #Instantiate a NonReg object:
-#        self.n=9
-#        NR=NRT.NonReg(args)
-#        #Read the config file of the Non Reg Project:
-#        conf=NR.ReadConfigFile(fconf)
-#        #Launch the project
-#        logging.info('Started')
-#        NR.RunNonRegProject(conf)
-#        logging.info('Finished')
-#
-#        o  = self.repP1+os.sep+"CompDiff" #Path to the comparison folder
-#        o_ok  = self.repP1+os.sep+"Comp_ok" #Path to the comparison folder
-#        res1="TA3_0.0001.csv"
-#        f1=o+os.sep+res1
-#        f1_ok=o_ok+os.sep+res1
-#        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
-#        Test=cmp(f1,f1_ok)
-#        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
-#
-#        res1="TA4_0.0001.csv"
-#        f1=o+os.sep+res1
-#        f1_ok=o_ok+os.sep+res1
-#        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
-#        Test=cmp(f1,f1_ok)
-#        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
-#
-#        o  = self.repP2+os.sep+"Comp" #Path to the comparison folder
-#        o_ok  = self.repP2+os.sep+"Comp_ok" #Path to the comparison folder
-#        res1="TA3_0.0001.csv"
-#        f1=o+os.sep+res1
-#        f1_ok=o_ok+os.sep+res1
-#        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
-#        Test=cmp(f1,f1_ok)
-#        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
-#
-#        res1="TA4_0.0001.csv"
-#        f1=o+os.sep+res1
-#        f1_ok=o_ok+os.sep+res1
-#        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
-#        Test=cmp(f1,f1_ok)
-#        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+    def test_RunNonRegProject_1(self):
+        """Test if a project is achived well"""
+        #Config file's path:
+        fconf=self.repNR1+os.sep+self.ProjectConfig
+        #Arguments:
+        arg=["i",fconf,"-s",",","-l","debug","-n","9"]
+        a=NRT.Argument(arg)
+        #Create an args dictionnary with argparse:
+        args=a.ArgsDef()
+        #Instantiate a NonReg object:
+        self.n=9
+        NR=NRT.NonReg(args)
+        #Read the config file of the Non Reg Project:
+        conf=NR.ReadConfigFile(fconf)
+        #Launch the project
+        logging.info('Started')
+        NR.RunNonRegProject(conf)
+        logging.info('Finished')
 
-#D:\atelier\PYTHON\NRTop\NRTop_dev\cas\TestNonReg\test_NonRegProject_2
+        o  = self.repP1+os.sep+"CompDiff" #Path to the comparison folder
+        o_ok  = self.repP1+os.sep+"Comp_ok" #Path to the comparison folder
+        res1="TA3_4.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        res1="TA4_4.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        o  = self.repP2+os.sep+"Comp" #Path to the comparison folder
+        o_ok  = self.repP2+os.sep+"Comp_ok" #Path to the comparison folder
+        res1="TA3_4.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+        res1="TA4_4.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
+
+
     def test_RunNonRegProject_2(self):
         """Test if a project with col name that differe is achived correctly"""
         #Config file's path:
         fconf=self.repNR2+os.sep+self.ProjectConfig
         #Arguments:
-        arg=["i",fconf,"-s",",","-n","9","-l","debug"]
+        arg=["i",fconf,"-s",",","-n","9","-l","debug","-e","1e-5"]
         a=NRT.Argument(arg)
         #Create an args dictionnary with argparse:
         args=a.ArgsDef()
@@ -479,7 +492,7 @@ class TestNonReg(ut.TestCase):
         
         o    = self.repNR2+os.sep+"cas01"+os.sep+"Comp" #Path to the comparison folder
         o_ok = self.repNR2+os.sep+"cas01"+os.sep+"Comp_ok" #Path to the comparison folder ok
-        res1="TA3_0.0001.csv"
+        res1="TA3_5.csv"
         f1=o+os.sep+res1
         f1_ok=o_ok+os.sep+res1
         logging.debug("File %s and %s are compared:"%(f1,f1_ok))
@@ -619,7 +632,7 @@ class TestArgument(ut.TestCase):
     def setUp(self):
         """ Init class"""
         self.rep_test = ".."+os.sep+"cas"+os.sep+"TestArgument"
-        self.res1="TA3_0.0001.csv"
+        self.res1="TA3_4.csv"
 
     def testArgsDef_1(self):
         """Test a command line to compare 2 files"""
