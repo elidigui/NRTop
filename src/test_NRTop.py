@@ -476,6 +476,15 @@ class TestNonReg(ut.TestCase):
         logging.info('Started')
         NR.RunNonRegProject(conf)
         logging.info('Finished')
+        
+        o    = self.repNR2+os.sep+"cas01"+os.sep+"Comp" #Path to the comparison folder
+        o_ok = self.repNR2+os.sep+"cas01"+os.sep+"Comp_ok" #Path to the comparison folder ok
+        res1="TA3_0.0001.csv"
+        f1=o+os.sep+res1
+        f1_ok=o_ok+os.sep+res1
+        logging.debug("File %s and %s are compared:"%(f1,f1_ok))
+        Test=cmp(f1,f1_ok)
+        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
 #        
 #    def testCleanTmp_1(self):
 #        """Test if the tmp dir hav not been removed when z=0"""
