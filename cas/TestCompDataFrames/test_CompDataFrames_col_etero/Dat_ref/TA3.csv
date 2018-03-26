@@ -3,7 +3,7 @@ SousEnsemble,AA,AA,AA,AA,AA,AA,AA,AA,AA,AA,AA,AA,AA,AA,AA,AA
 GrandeurPhysiques,PP (Relative),VV,VV,VV,VV,VV,VV,VV,VV,VV,VV,VV,VV,PP (Relative),PP (Relative),PP (Relative)
 DateOrigine,01/07/2016 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54,01/01/2001 06:54
 Echantillonnage,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz,16Hz
-Mesure,Courbe rÃ©elle 528*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 528*1*1,Courbe rÃ©elle 528*1*1,Courbe rÃ©elle 528*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1,Courbe rÃ©elle 527*1*1
+Mesure,Courbe réelle 528*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 528*1*1,Courbe réelle 528*1*1,Courbe réelle 528*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1,Courbe réelle 527*1*1
 XUnit,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s
 YUnit,bar,m/s,m/s,m/s,m/s,m/s,m/s,m/s,m/s,m/s,m/s,m/s,m/s,bar,bar,bar
 Temps (s),Cour_K PP,Cour_H Beam3Z-UP,Cour_H Beam2Y-North,Cour_H Beam1X-East,Cour_I Beam3Z-UP,Cour_I Beam2Y-North,Cour_I Beam1X-East,Cour_J Beam3Z-UP,Cour_J Beam2Y-North,Cour_J Beam1X-East,Cour_K Beam3Z-UP,Cour_K Beam2Y-North,Cour_K Beam1X-East,Cour_H PP,Cour_I PP,Cour_J PP
