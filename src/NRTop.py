@@ -103,7 +103,7 @@ class CompDataFrames:
                 #logging.debug('df1=%s; df2=%s'%(df1,df2))        
                 logging.debug('Finished')        
                 #diff_mask = (df1 != df2) & ((df1-df2)/df1 >err) # & ~(df1.isnull() & df2.isnull())
-                diff_mask = (df1 != df2)  & ((df1-df2)/df1 >err) # & ~(df1.isnull() & df2.isnull())
+                diff_mask = df1.ne(df2)  & ((df1-df2)/df1 >err) # & ~(df1.isnull() & df2.isnull())
                 ne_stacked = diff_mask.stack()
                 changed = ne_stacked[ne_stacked]
                 changed.index.names = ['id', 'col']
@@ -160,6 +160,22 @@ class CompDataFrames:
         #Create a list with that set
         f2 = sorted(e2)
         return(f2)
+    
+    def egalise_row(self,d1,d2):
+        """ Delete last row of the longuer DF so that it have the same
+        length than the shorter """
+        l1=d1.shape[0]
+        l2=d2.shape[0]
+        dl=l1-l2
+        if dl>0:
+            for i in 1,d1:
+                d=d1.drop(d1.tail(1).index)
+                d1=d
+        else:
+            for i in 1,-d1:
+                d=d2.drop(d2.tail(1).index)
+                d2=d
+        return(d1,d2)
 
     def Export_diff(self,d,dest):
         """ Export the result of diff_pd_2 in a csv file """
