@@ -459,23 +459,23 @@ class TestNonReg(ut.TestCase):
 #        self.assertTrue(Test,"File %s and %s differ"%(f1,f1_ok))
 
 #D:\atelier\PYTHON\NRTop\NRTop_dev\cas\TestNonReg\test_NonRegProject_2
-#    def test_RunNonRegProject_2(self):
-#        """Test if a project with col name that differe is achived correctly"""
-#        #Config file's path:
-#        fconf=self.repNR2+os.sep+self.ProjectConfig
-#        #Arguments:
-#        arg=["i",fconf,"-s",",","-n","9","-l","debug"]
-#        a=NRT.Argument(arg)
-#        #Create an args dictionnary with argparse:
-#        args=a.ArgsDef()
-#        #Instantiate a NonReg object:
-#        NR=NRT.NonReg(args)
-#        #Read the config file of the Non Reg Project:
-#        conf=NR.ReadConfigFile(args.i[0])
-#        #Launch the project
-#        logging.info('Started')
-#        NR.RunNonRegProject(conf)
-#        logging.info('Finished')
+    def test_RunNonRegProject_2(self):
+        """Test if a project with col name that differe is achived correctly"""
+        #Config file's path:
+        fconf=self.repNR2+os.sep+self.ProjectConfig
+        #Arguments:
+        arg=["i",fconf,"-s",",","-n","9","-l","debug"]
+        a=NRT.Argument(arg)
+        #Create an args dictionnary with argparse:
+        args=a.ArgsDef()
+        #Instantiate a NonReg object:
+        NR=NRT.NonReg(args)
+        #Read the config file of the Non Reg Project:
+        conf=NR.ReadConfigFile(fconf)
+        #Launch the project
+        logging.info('Started')
+        NR.RunNonRegProject(conf)
+        logging.info('Finished')
 #        
 #    def testCleanTmp_1(self):
 #        """Test if the tmp dir hav not been removed when z=0"""
